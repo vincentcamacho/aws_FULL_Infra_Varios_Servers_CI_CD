@@ -1,0 +1,11 @@
+variable "llave_ssh" {}
+variable "server_role" {}
+variable "proyecto" {}
+variable "los_IDs_subredes" {}
+variable "ip_nodos_master" {}
+variable "ip_nodos_client" {}
+variable "los_SG" {}
+variable "AZs" {}
+variable "win_server_ami" {}
+variable "region" {}
+variable "tipo_instancia" {}
