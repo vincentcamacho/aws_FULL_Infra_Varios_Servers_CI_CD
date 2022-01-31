@@ -21,31 +21,53 @@ resource "aws_network_interface" "mi_nic" {
 
 data "template_file" "userdata_linux_ubuntu" {
   template = <<-EOT
-              #!/bin/bash
-              INICIO=$(date "+%F %H:%M:%S")
-              echo "Hora de inicio del script: $INICIO" > /home/ubuntu/a_${var.server_role}.txt
+                #!/bin/bash
+                INICIO=$(date "+%F %H:%M:%S")
+                echo "Hora de inicio del script: $INICIO" > /home/ubuntu/a_${var.server_role}.txt
 
-              hostnamectl set-hostname ${var.server_role}
-              echo "ubuntu:123456" | chpasswd
+                hostnamectl set-hostname ${var.server_role}
+                echo "ubuntu:${var.contrasena_user}" | chpasswd
 
-              sudo apt update -y && sudo apt upgrade -y
+                #Agregar otro usuario para que administre Ansible
+                usuario=${var.usuario_ansible}
+                sudo useradd -U $usuario -m -s /bin/bash -p $usuario -G sudo
+                echo "$usuario:${var.contrasena_user}" | chpasswd
 
-              sudo apt remove docker docker.io containerd runc -y
-              sudo apt install ca-certificates curl gnupg lsb-release -y
-              sudo apt autoremove -y
-              curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
-              echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-              sudo apt update -y
-              sudo apt install docker-ce docker-ce-cli containerd.io -y
-              sudo usermod -aG docker $USER
+                #Agregar usuario para que administre Docker
+                usuario=${var.usuario_docker}
+                sudo useradd -U $usuario -m -s /bin/bash -p $usuario
+                sudo usermod -aG docker $usuario
+                echo "$usuario:${var.contrasena_user}" | chpasswd
 
-              sudo sed -i 's/^PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config
-              sudo sed -i 's/^#PubkeyAuthentication yes/PubkeyAuthentication yes/' /etc/ssh/sshd_config
-              sudo service sshd restart
+                #Tambien agregar al usuario AnsibleAdmin al grupo Docker
+                sudo usermod -aG docker ${var.usuario_ansible}
 
-              echo "El rol de este servidor es: ${var.server_role}" > /home/ubuntu/b_${var.server_role}.txt
-              FINAL=$(date "+%F %H:%M:%S")
-              echo "Hora de finalizacion del script: $FINAL" >> /home/ubuntu/a_${var.server_role}.txt
+                #Evitar que pida el password a cada rato para usuarios que sean parte del grupo sudo
+                sed -i /etc/sudoers -re 's/^%sudo.*/%sudo ALL=(ALL:ALL) NOPASSWD: ALL/g'
+                sed -i /etc/sudoers -re 's/^#includedir.*/## Removed the #include directive! ##"/g'
+
+                #Agregar a los archivos sudoers este nuevo usuario
+                echo "$usuario ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+                echo "$usuario ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers.d/90-cloud-init-users
+
+                sudo apt update -y && sudo apt upgrade -y
+
+                sudo apt remove docker docker.io containerd runc -y
+                sudo apt install ca-certificates curl gnupg lsb-release -y
+                sudo apt autoremove -y
+                curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+                echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+                sudo apt update -y
+                sudo apt install docker-ce docker-ce-cli containerd.io -y
+                sudo usermod -aG docker $USER
+
+                sudo sed -i 's/^PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config
+                sudo sed -i 's/^#PubkeyAuthentication yes/PubkeyAuthentication yes/' /etc/ssh/sshd_config
+                sudo service sshd restart
+
+                echo "El rol de este servidor es: ${var.server_role}" > /home/ubuntu/b_${var.server_role}.txt
+                FINAL=$(date "+%F %H:%M:%S")
+                echo "Hora de finalizacion del script: $FINAL" >> /home/ubuntu/a_${var.server_role}.txt
 
               EOT
 }

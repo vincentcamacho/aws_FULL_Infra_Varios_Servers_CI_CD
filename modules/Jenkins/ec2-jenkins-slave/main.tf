@@ -22,27 +22,40 @@ resource "aws_network_interface" "mi_nic" {
 
 data "template_file" "userdata_linux_ubuntu" {
   template = <<-EOT
-              #!/bin/bash
-              INICIO=$(date "+%F %H:%M:%S")
-              echo "Hora de inicio del script: $INICIO" > /home/ubuntu/a_${var.server_role}.txt
+                #!/bin/bash
+                INICIO=$(date "+%F %H:%M:%S")
+                echo "Hora de inicio del script: $INICIO" > /home/ubuntu/a_${var.server_role}.txt
 
-              hostnamectl set-hostname ${var.server_role}
-              echo "ubuntu:123456" | chpasswd
+                hostnamectl set-hostname ${var.server_role}
+                echo "ubuntu:${var.contrasena_user}" | chpasswd
 
-              sudo apt update -y && sudo apt upgrade -y
+                #Agregar otro usuario para que administre Ansible
+                usuario=${var.usuario_ansible}
+                sudo useradd -U $usuario -m -s /bin/bash -p $usuario -G sudo
+                echo "$usuario:${var.contrasena_user}" | chpasswd
 
-              sudo apt install openjdk-11-jdk -y
-              sudo sed -i 's/^PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config
-              sudo sed -i 's/^#PubkeyAuthentication yes/PubkeyAuthentication yes/' /etc/ssh/sshd_config
-              sudo service sshd restart
+                #Evitar que pida el password a cada rato para usuarios que sean parte del grupo sudo
+                sed -i /etc/sudoers -re 's/^%sudo.*/%sudo ALL=(ALL:ALL) NOPASSWD: ALL/g'
+                sed -i /etc/sudoers -re 's/^#includedir.*/## Removed the #include directive! ##"/g'
 
-              echo "El rol de este servidor Jenkins es: ${var.server_role}" > /home/ubuntu/b_${var.server_role}.txt
-              FINAL=$(date "+%F %H:%M:%S")
-              echo "Hora de finalizacion del script: $FINAL" >> /home/ubuntu/a_${var.server_role}.txt
+                #Agregar a los archivos sudoers este nuevo usuario
+                echo "$usuario ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+                echo "$usuario ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers.d/90-cloud-init-users
 
-              ssh-keygen -t rsa -N "" -f /home/ubuntu/.ssh/id_rsa
-              cd /home/ubuntu/.ssh
-              sudo cat id_rsa.pub > authorized_keys
-              chmod 700 authorized_keys
+                sudo apt update -y && sudo apt upgrade -y
+
+                sudo apt install openjdk-11-jdk -y
+                sudo sed -i 's/^PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config
+                sudo sed -i 's/^#PubkeyAuthentication yes/PubkeyAuthentication yes/' /etc/ssh/sshd_config
+                sudo service sshd restart
+
+                echo "El rol de este servidor Jenkins es: ${var.server_role}" > /home/ubuntu/b_${var.server_role}.txt
+                FINAL=$(date "+%F %H:%M:%S")
+                echo "Hora de finalizacion del script: $FINAL" >> /home/ubuntu/a_${var.server_role}.txt
+
+                ssh-keygen -t rsa -N "" -f /home/ubuntu/.ssh/id_rsa
+                cd /home/ubuntu/.ssh
+                sudo cat id_rsa.pub > authorized_keys
+                chmod 700 authorized_keys
               EOT
 }

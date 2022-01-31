@@ -21,24 +21,58 @@ resource "aws_network_interface" "mi_nic" {
 
 data "template_file" "userdata_linux_ubuntu" {
   template = <<-EOT
-              #!/bin/bash
-              INICIO=$(date "+%F %H:%M:%S")
-              echo "Hora de inicio del script: $INICIO" > /home/ubuntu/a_${var.server_role}.txt
+                #!/bin/bash
+                INICIO=$(date "+%F %H:%M:%S")
+                echo "Hora de inicio del script: $INICIO" > /home/ubuntu/a_${var.server_role}.txt
 
-              hostnamectl set-hostname ${var.server_role}
-              echo "ubuntu:123456" | chpasswd
+                hostnamectl set-hostname ${var.server_role}
+                echo "ubuntu:${var.contrasena_user}" | chpasswd
 
-              sudo apt update -y && sudo apt upgrade -y
+                #Agregar otro usuario para que administre Ansible
+                usuario=${var.usuario_ansible}
+                sudo useradd -U $usuario -m -s /bin/bash -p $usuario -G sudo
+                echo "$usuario:${var.contrasena_user}" | chpasswd
 
-              sudo apt install ansible -y
+                #Evitar que pida el password a cada rato para usuarios que sean parte del grupo sudo
+                sed -i /etc/sudoers -re 's/^%sudo.*/%sudo ALL=(ALL:ALL) NOPASSWD: ALL/g'
+                sed -i /etc/sudoers -re 's/^#includedir.*/## Removed the #include directive! ##"/g'
 
-              sudo sed -i 's/^PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config
-              sudo sed -i 's/^#PubkeyAuthentication yes/PubkeyAuthentication yes/' /etc/ssh/sshd_config
-              sudo service sshd restart
+                #Agregar a los archivos sudoers este nuevo usuario
+                echo "$usuario ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+                echo "$usuario ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers.d/90-cloud-init-users
 
-              echo "El rol de este servidor es: ${var.server_role}" > /home/ubuntu/b_${var.server_role}.txt
-              FINAL=$(date "+%F %H:%M:%S")
-              echo "Hora de finalizacion del script: $FINAL" >> /home/ubuntu/a_${var.server_role}.txt
+                sudo apt update -y && sudo apt upgrade -y
+
+                sudo apt install ansible -y
+
+                sudo bash -c 'echo "${var.ip_server_docker} docker" >> /etc/hosts'
+                sudo bash -c 'echo "${var.ip_server_tomcat} tomcat" >> /etc/hosts'
+                sudo bash -c 'echo "${var.ip_server_jenkins_master} jenkinsmaster" >> /etc/hosts'
+                sudo bash -c 'echo "${var.ip_server_jenkins_slave} jenkinsslave" >> /etc/hosts'
+                sudo bash -c 'echo "${var.ip_server_k8s_master} k8master" >> /etc/hosts'
+                sudo bash -c 'echo "${var.ip_server_k8s_worker_1} k8worker1" >> /etc/hosts'
+                sudo bash -c 'echo "${var.ip_server_k8s_worker_2} k8worker2" >> /etc/hosts'
+                sudo bash -c 'echo "${var.ip_server_puppet_master} puppetmaster" >> /etc/hosts'
+                sudo bash -c 'echo "${var.ip_server_puppet_client} puppetclient" >> /etc/hosts'
+
+                sudo bash -c 'echo "[servidores]" >> /etc/ansible/hosts'
+                sudo bash -c 'echo "docker" >> /etc/ansible/hosts'
+                sudo bash -c 'echo "tomcat" >> /etc/ansible/hosts'
+                sudo bash -c 'echo "jenkinsmaster" >> /etc/ansible/hosts'
+                sudo bash -c 'echo "jenkinsslave" >> /etc/ansible/hosts'
+                sudo bash -c 'echo "k8master" >> /etc/ansible/hosts'
+                sudo bash -c 'echo "k8worker1" >> /etc/ansible/hosts'
+                sudo bash -c 'echo "k8worker2" >> /etc/ansible/hosts'
+                sudo bash -c 'echo "puppetmaster" >> /etc/ansible/hosts'
+                sudo bash -c 'echo "puppetclient" >> /etc/ansible/hosts'
+
+                sudo sed -i 's/^PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config
+                sudo sed -i 's/^#PubkeyAuthentication yes/PubkeyAuthentication yes/' /etc/ssh/sshd_config
+                sudo service sshd restart
+
+                echo "El rol de este servidor es: ${var.server_role}" > /home/ubuntu/b_${var.server_role}.txt
+                FINAL=$(date "+%F %H:%M:%S")
+                echo "Hora de finalizacion del script: $FINAL" >> /home/ubuntu/a_${var.server_role}.txt
 
               EOT
 }
