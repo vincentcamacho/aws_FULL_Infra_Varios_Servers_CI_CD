@@ -46,6 +46,14 @@ data "template_file" "userdata_linux_ubuntu" {
                 sudo bash -c 'echo "${var.ip_nodos_master[0]} puppetmaster puppet" >> /etc/hosts'
                 sudo bash -c 'echo "${var.ip_nodos_client[0]} puppetclient" >> /etc/hosts'
 
+                sudo bash -c 'echo "${var.ip_server_docker} docker" >> /etc/hosts'
+                sudo bash -c 'echo "${var.ip_server_tomcat} tomcat" >> /etc/hosts'
+                sudo bash -c 'echo "${var.ip_server_jenkins_master} jenkinsmaster" >> /etc/hosts'
+                sudo bash -c 'echo "${var.ip_server_jenkins_slave} jenkinsslave" >> /etc/hosts'
+                sudo bash -c 'echo "${var.ip_server_k8s_master} k8master" >> /etc/hosts'
+                sudo bash -c 'echo "${var.ip_server_k8s_worker_1} k8worker1" >> /etc/hosts'
+                sudo bash -c 'echo "${var.ip_server_k8s_worker_2} k8worker2" >> /etc/hosts'
+
                 wget https://apt.puppetlabs.com/puppet7-release-focal.deb
                 sudo dpkg -i puppet7-release-focal.deb
                 sudo apt update -y

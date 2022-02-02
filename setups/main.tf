@@ -116,6 +116,14 @@ module "vm_puppet_master" {
   win_server_ami   = var.UBUNTU_AMI
   region           = var.REGION
   tipo_instancia   = var.TIPO_MEDIANA
+
+  ip_server_docker         = var.ip_docker
+  ip_server_tomcat         = var.ip_tomcat
+  ip_server_jenkins_master = var.ip_jenkins_master
+  ip_server_jenkins_slave  = var.ip_jenkins_slave
+  ip_server_k8s_master     = var.ip_k8_master
+  ip_server_k8s_worker_1   = var.ip_k8_worker_1
+  ip_server_k8s_worker_2   = var.ip_k8_worker_2
 }
 
 module "vm_puppet_client" {
@@ -133,6 +141,14 @@ module "vm_puppet_client" {
   win_server_ami   = var.UBUNTU_AMI
   region           = var.REGION
   tipo_instancia   = var.TIPO_PEQUENA
+
+  ip_server_docker         = var.ip_docker
+  ip_server_tomcat         = var.ip_tomcat
+  ip_server_jenkins_master = var.ip_jenkins_master
+  ip_server_jenkins_slave  = var.ip_jenkins_slave
+  ip_server_k8s_master     = var.ip_k8_master
+  ip_server_k8s_worker_1   = var.ip_k8_worker_1
+  ip_server_k8s_worker_2   = var.ip_k8_worker_2
 }
 
 module "vm_k8_master" {
