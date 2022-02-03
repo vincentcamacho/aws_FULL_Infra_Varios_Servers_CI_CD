@@ -49,11 +49,16 @@ data "template_file" "userdata_linux_ubuntu" {
                 sudo apt update -y && sudo apt upgrade -y
 
                 sudo apt install tomcat9 tomcat9-admin -y
+                sudo sed -i 's|</tomcat-users>|<role rolename="manager-gui"/>\n<role rolename="manager-script"/>\n<role rolename="manager-jmx"/>\n<role rolename="manager-status"/>\n<user username="admin" password="admin" roles="manager-gui, manager-script, manager-jmx, manager-status"/>\n<user username="deployer" password="deployer" roles="manager-script"/>\n<user username="tomcat" password="s3cret" roles="manager-gui"/>\n</tomcat-users>|g' /etc/tomcat9/tomcat-users.xml
                 sudo systemctl enable tomcat9
 
                 sudo sed -i 's/^PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config
                 sudo sed -i 's/^#PubkeyAuthentication yes/PubkeyAuthentication yes/' /etc/ssh/sshd_config
                 sudo service sshd restart
+
+                sudo su -
+                cp /var/lib/tomcat9/webapps/ROOT/index.html /var/lib/tomcat9/webapps/ROOT/OLD_index.html
+                echo "<h1>Mi servidor Tomcat</h1>" > /var/lib/tomcat9/webapps/ROOT/index.html
 
                 echo "El rol de este servidor es: ${var.server_role}" > /home/ubuntu/b_${var.server_role}.txt
                 FINAL=$(date "+%F %H:%M:%S")
