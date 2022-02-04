@@ -5,7 +5,7 @@ resource "aws_instance" "mis_vms" {
   # subnet_id                   = var.los_IDs_subredes[count.index]
   user_data                   = data.template_file.userdata_linux_ubuntu.rendered
   key_name                    = var.llave_ssh
-  tags                        = { Name = "srv-${var.server_role}-${var.proyecto}" }
+  tags                        = { Name = "srv-${var.server_role}" }
 
   network_interface {
     network_interface_id = "${aws_network_interface.mi_nic.id}"
@@ -41,25 +41,23 @@ data "template_file" "userdata_linux_ubuntu" {
                 echo "$usuario ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
                 echo "$usuario ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers.d/90-cloud-init-users
 
-                sudo su -
-                apt update -y && apt upgrade -y
-                
-                apt install openjdk-11-jdk git -y
-                apt install maven -y
-                wget -q -O - https://pkg.jenkins.io/debian-stable/jenkins.io.key | apt-key add -
-                sh -c 'echo deb http://pkg.jenkins.io/debian-stable binary/ > /etc/apt/sources.list.d/jenkins.list'
-                apt update -y
-                apt install jenkins -y
-                systemctl start jenkins
-                cat /var/lib/jenkins/secrets/initialAdminPassword | tee -a /home/ubuntu/contrasena_de_Jenkins.txt
-                
-                sed -i 's/^PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config
-                sed -i 's/^#PubkeyAuthentication yes/PubkeyAuthentication yes/' /etc/ssh/sshd_config
-                service sshd restart
+                #Agregar un usuario de Ansible que permitira instalar cosas aca
+                usuario=ansibleadmin
+                sudo useradd -U $usuario -m -s /bin/bash -p $usuario -G sudo
+                echo "$usuario:123" | chpasswd
 
-                echo "El rol de este servidor Jenkins es: ${var.server_role}" > /home/ubuntu/b_${var.server_role}.txt
+                sudo apt update -y && sudo apt upgrade -y
+
+                sudo apt install maven openjdk-11-jdk git -y
+
+                sudo sed -i 's/^PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config
+                sudo sed -i 's/^#PubkeyAuthentication yes/PubkeyAuthentication yes/' /etc/ssh/sshd_config
+                sudo service sshd restart
+
+                echo "El rol de este servidor es: ${var.server_role}" > /home/ubuntu/b_${var.server_role}.txt
                 FINAL=$(date "+%F %H:%M:%S")
                 echo "Hora de finalizacion del script: $FINAL" >> /home/ubuntu/a_${var.server_role}.txt
+
               EOT
 }
 

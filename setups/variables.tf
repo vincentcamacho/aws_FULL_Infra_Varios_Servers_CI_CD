@@ -9,6 +9,7 @@ variable "AV_ZONES" { default = ["eu-west-3a", "eu-west-3b", "eu-west-3c"] }
 variable "CIDR_PRIVADOS_SUBRED" { default = ["10.0.0.0/24", "10.0.1.0/24", "10.0.2.0/24"] }
 variable "CIDR_PUBLICOS_SUBRED" { default = ["10.0.3.0/24", "10.0.4.0/24", "10.0.5.0/24"] }
 
+variable "ip_maven" { default = "10.0.3.15" }
 variable "ip_jenkins_master" { default = "10.0.3.20" }
 variable "ip_jenkins_slave" { default = "10.0.3.21" }
 variable "ip_tomcat" { default = "10.0.3.10" }

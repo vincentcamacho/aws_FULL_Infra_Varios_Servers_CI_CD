@@ -25,6 +25,22 @@ module "vm_jenkins_master" {
   tipo_instancia   = var.TIPO_MEDIANA
 }
 
+module "vm_maven" {
+  source           = "../modules/Maven/ec2-maven"
+  llave_ssh        = aws_key_pair.mi_ssh_key.key_name
+  server_role      = "maven"
+  usuario_ansible  = "ansibleadmin"
+  contrasena_user  = "123"
+  proyecto         = var.NOMBRE_PROYECTO
+  los_IDs_subredes = module.subredes_publicas.IDs_subredes
+  ip_fija_privada  = var.ip_maven
+  los_SG           = aws_security_group.mi_sec_group.id
+  AZs              = var.AV_ZONES
+  win_server_ami   = var.UBUNTU_AMI
+  region           = var.REGION
+  tipo_instancia   = var.TIPO_MICRO
+}
+
 # module "vm_jenkins_slave" {
 #   source           = "../modules/Jenkins/ec2-jenkins-master"
 #   llave_ssh        = aws_key_pair.mi_ssh_key.key_name
