@@ -10,7 +10,7 @@ module "subredes_publicas" {
 }
 
 module "vm_jenkins_master" {
-  source           = "../modules/Jenkins/ec2-jenkins-slave"
+  source           = "../modules/Jenkins/ec2-jenkins-master"
   llave_ssh        = aws_key_pair.mi_ssh_key.key_name
   server_role      = "jenkinsmaster"
   usuario_ansible  = "ansibleadmin"
@@ -42,7 +42,7 @@ module "vm_maven" {
 }
 
 # module "vm_jenkins_slave" {
-#   source           = "../modules/Jenkins/ec2-jenkins-master"
+#   source           = "../modules/Jenkins/ec2-jenkins-slave"
 #   llave_ssh        = aws_key_pair.mi_ssh_key.key_name
 #   server_role      = "jenkinsslave"
 #   usuario_ansible  = "ansibleadmin"

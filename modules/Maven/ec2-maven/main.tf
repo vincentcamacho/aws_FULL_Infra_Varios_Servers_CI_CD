@@ -25,7 +25,7 @@ data "template_file" "userdata_linux_ubuntu" {
                 INICIO=$(date "+%F %H:%M:%S")
                 echo "Hora de inicio del script: $INICIO" > /home/ubuntu/a_${var.server_role}.txt
 
-                hostnamectl set-hostname ${var.server_role}
+                sudo hostnamectl set-hostname ${var.server_role}
                 echo "ubuntu:${var.contrasena_user}" | chpasswd
 
                 #Agregar otro usuario para que administre Ansible
@@ -48,7 +48,24 @@ data "template_file" "userdata_linux_ubuntu" {
 
                 sudo apt update -y && sudo apt upgrade -y
 
-                sudo apt install maven openjdk-11-jdk git -y
+                #Install OpenJDK - Maven 3.3+ requires JDK 1.7 or above to be installed.
+                sudo apt install default-jdk git -y
+
+                #Download latest Apache Maven version (04/02/2022 today is 3.8.4). Before continuing with the next step, visit the Maven download page to check latest version
+                sudo wget -P /tmp https://dlcdn.apache.org/maven/maven-3/3.8.4/binaries/apache-maven-3.8.4-bin.tar.gz
+
+                #Once the download is completed, extract the archive in the /opt directory:
+                sudo tar -xf /tmp/apache-maven-3.8.4-bin.tar.gz -C /opt
+
+                #To have more control over Maven versions and updates, we will create a symbolic link maven that will point to the Maven installation directory:
+                sudo ln -s /opt/apache-maven-3.8.4 /opt/maven
+
+                echo 'export JAVA_HOME=/usr/lib/jvm/default-java' > /etc/profile.d/maven.sh
+                echo 'export M2_HOME=/opt/maven' >> /etc/profile.d/maven.sh
+                echo 'export MAVEN_HOME=/opt/maven' >> /etc/profile.d/maven.sh
+                echo 'export PATH=/opt/maven/bin:$PATH' >> /etc/profile.d/maven.sh
+
+                source /etc/profile.d/maven.sh
 
                 sudo sed -i 's/^PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config
                 sudo sed -i 's/^#PubkeyAuthentication yes/PubkeyAuthentication yes/' /etc/ssh/sshd_config
@@ -60,4 +77,3 @@ data "template_file" "userdata_linux_ubuntu" {
 
               EOT
 }
-

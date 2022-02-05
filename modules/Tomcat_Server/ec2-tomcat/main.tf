@@ -25,7 +25,7 @@ data "template_file" "userdata_linux_ubuntu" {
                 INICIO=$(date "+%F %H:%M:%S")
                 echo "Hora de inicio del script: $INICIO" > /home/ubuntu/a_${var.server_role}.txt
 
-                hostnamectl set-hostname ${var.server_role}
+                sudo hostnamectl set-hostname ${var.server_role}
                 echo "ubuntu:${var.contrasena_user}" | chpasswd
 
                 #Agregar otro usuario para que administre Ansible
