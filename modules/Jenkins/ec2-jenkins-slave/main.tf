@@ -42,7 +42,8 @@ data "template_file" "userdata_linux_ubuntu" {
                 echo "$usuario ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
                 echo "$usuario ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers.d/90-cloud-init-users
 
-                sudo apt update -y && sudo apt upgrade -y
+                sudo ufw disable
+                sudo apt update -y && sudo apt upgrade -y && sudo apt install tree -y
 
                 sudo apt install openjdk-11-jdk -y
                 sudo sed -i 's/^PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config

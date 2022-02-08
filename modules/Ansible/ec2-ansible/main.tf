@@ -41,7 +41,8 @@ data "template_file" "userdata_linux_ubuntu" {
                 echo "$usuario ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
                 echo "$usuario ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers.d/90-cloud-init-users
 
-                sudo apt update -y && sudo apt upgrade -y
+                sudo ufw disable
+                sudo apt update -y && sudo apt upgrade -y && sudo apt install tree -y
 
                 sudo apt install ansible -y
 
@@ -54,10 +55,14 @@ data "template_file" "userdata_linux_ubuntu" {
                 sudo bash -c 'echo "${var.ip_server_k8s_worker_2} k8worker2" >> /etc/hosts'
                 sudo bash -c 'echo "${var.ip_server_puppet_master} puppetmaster" >> /etc/hosts'
                 sudo bash -c 'echo "${var.ip_server_puppet_client} puppetclient" >> /etc/hosts'
+                sudo bash -c 'echo "${var.ip_server_maven} maven" >> /etc/hosts'
 
                 sudo bash -c 'echo "[servidores]" >> /etc/ansible/hosts'
-                sudo bash -c 'echo "docker" >> /etc/ansible/hosts'
                 sudo bash -c 'echo "tomcat" >> /etc/ansible/hosts'
+                sudo bash -c 'echo "" >> /etc/ansible/hosts'
+
+                sudo bash -c 'echo "[otros]" >> /etc/ansible/hosts'
+                sudo bash -c 'echo "docker" >> /etc/ansible/hosts'
                 sudo bash -c 'echo "jenkinsmaster" >> /etc/ansible/hosts'
                 sudo bash -c 'echo "jenkinsslave" >> /etc/ansible/hosts'
                 sudo bash -c 'echo "k8master" >> /etc/ansible/hosts'
@@ -65,6 +70,8 @@ data "template_file" "userdata_linux_ubuntu" {
                 sudo bash -c 'echo "k8worker2" >> /etc/ansible/hosts'
                 sudo bash -c 'echo "puppetmaster" >> /etc/ansible/hosts'
                 sudo bash -c 'echo "puppetclient" >> /etc/ansible/hosts'
+                sudo bash -c 'echo "maven" >> /etc/ansible/hosts'
+                
 
                 sudo sed -i 's/^PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config
                 sudo sed -i 's/^#PubkeyAuthentication yes/PubkeyAuthentication yes/' /etc/ssh/sshd_config

@@ -41,7 +41,8 @@ data "template_file" "userdata_linux_ubuntu" {
                 echo "$usuario ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
                 echo "$usuario ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers.d/90-cloud-init-users
 
-                sudo apt update -y && sudo apt upgrade -y
+                sudo ufw disable
+                sudo apt update -y && sudo apt upgrade -y && sudo apt install tree -y
 
                 sudo bash -c 'echo "${var.ip_nodos_master[0]} k8master" >> /etc/hosts'
                 sudo bash -c 'echo "${var.ip_nodos_worker[0]} k8worker1" >> /etc/hosts'

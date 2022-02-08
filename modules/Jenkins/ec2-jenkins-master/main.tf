@@ -46,7 +46,19 @@ data "template_file" "userdata_linux_ubuntu" {
                 sudo useradd -U $usuario -m -s /bin/bash -p $usuario -G sudo
                 echo "$usuario:123" | chpasswd
 
-                sudo apt update -y && sudo apt upgrade -y
+                sudo ufw disable
+                sudo apt update -y && sudo apt upgrade -y && sudo apt install tree -y
+
+                sudo bash -c 'echo "${var.ip_server_docker} docker" >> /etc/hosts'
+                sudo bash -c 'echo "${var.ip_server_tomcat} tomcat" >> /etc/hosts'
+                sudo bash -c 'echo "${var.ip_server_ansible} ansible" >> /etc/hosts'
+                sudo bash -c 'echo "${var.ip_server_jenkins_slave} jenkinsslave" >> /etc/hosts'
+                sudo bash -c 'echo "${var.ip_server_k8s_master} k8master" >> /etc/hosts'
+                sudo bash -c 'echo "${var.ip_server_k8s_worker_1} k8worker1" >> /etc/hosts'
+                sudo bash -c 'echo "${var.ip_server_k8s_worker_2} k8worker2" >> /etc/hosts'
+                sudo bash -c 'echo "${var.ip_server_puppet_master} puppetmaster" >> /etc/hosts'
+                sudo bash -c 'echo "${var.ip_server_puppet_client} puppetclient" >> /etc/hosts'
+                sudo bash -c 'echo "${var.ip_server_maven} maven" >> /etc/hosts'
 
                 #Install OpenJDK - Maven 3.3+ requires JDK 1.7 or above to be installed.
                 sudo apt install default-jdk git -y
@@ -60,11 +72,12 @@ data "template_file" "userdata_linux_ubuntu" {
                 #To have more control over Maven versions and updates, we will create a symbolic link maven that will point to the Maven installation directory:
                 sudo ln -s /opt/apache-maven-3.8.4 /opt/maven
 
-                echo 'export JAVA_HOME=/usr/lib/jvm/default-java' > /etc/profile.d/maven.sh
+                echo 'export JENKINS_HOME=/var/lib/jenkins' > /etc/profile.d/maven.sh
+                echo 'export JAVA_HOME=/usr/lib/jvm/default-java' >> /etc/profile.d/maven.sh
                 echo 'export M2_HOME=/opt/maven' >> /etc/profile.d/maven.sh
                 echo 'export MAVEN_HOME=/opt/maven' >> /etc/profile.d/maven.sh
                 echo 'export PATH=/opt/maven/bin:$PATH' >> /etc/profile.d/maven.sh
-
+                
                 source /etc/profile.d/maven.sh
 
                 # wget -q -O - https://pkg.jenkins.io/debian-stable/jenkins.io.key | apt-key add -

@@ -41,8 +41,8 @@ data "template_file" "userdata_linux_ubuntu" {
                 sed -i /etc/sudoers -re 's/^%sudo.*/%sudo ALL=(ALL:ALL) NOPASSWD: ALL/g'
                 sed -i /etc/sudoers -re 's/^#includedir.*/## Removed the #include directive! ##"/g'
 
-
-                sudo apt update -y && sudo apt upgrade -y
+                sudo ufw disable
+                sudo apt update -y && sudo apt upgrade -y && sudo apt install tree -y
 
                 #Uninstall old Docker versions
                 sudo apt remove docker docker.io containerd runc -y
@@ -84,6 +84,14 @@ data "template_file" "userdata_linux_ubuntu" {
                 #Change the docker.sock permission
                 sudo chmod 666 /var/run/docker.sock
 
+                #Crear alias SUPER UTILES para Docker
+                alias dp='docker ps'
+                alias dpa='docker ps -a'
+                alias di='docker images'
+                alias ds='docker stop'
+                alias drm='docker rm -f'
+                alias dka='docker rm $(docker stop $(docker ps -aq))'
+                alias drd='docker run -d'
 
                 sudo sed -i 's/^PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config
                 sudo sed -i 's/^#PubkeyAuthentication yes/PubkeyAuthentication yes/' /etc/ssh/sshd_config

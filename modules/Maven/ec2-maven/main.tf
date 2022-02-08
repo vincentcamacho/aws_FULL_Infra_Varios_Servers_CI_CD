@@ -46,7 +46,8 @@ data "template_file" "userdata_linux_ubuntu" {
                 sudo useradd -U $usuario -m -s /bin/bash -p $usuario -G sudo
                 echo "$usuario:123" | chpasswd
 
-                sudo apt update -y && sudo apt upgrade -y
+                sudo ufw disable
+                sudo apt update -y && sudo apt upgrade -y && sudo apt install tree -y
 
                 #Install OpenJDK - Maven 3.3+ requires JDK 1.7 or above to be installed.
                 sudo apt install default-jdk git -y

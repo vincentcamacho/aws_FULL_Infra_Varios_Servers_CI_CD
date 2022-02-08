@@ -46,7 +46,8 @@ data "template_file" "userdata_linux_ubuntu" {
                 sudo useradd -U $usuario -m -s /bin/bash -p $usuario -G sudo
                 echo "$usuario:123" | chpasswd
 
-                sudo apt update -y && sudo apt upgrade -y
+                sudo ufw disable
+                sudo apt update -y && sudo apt upgrade -y && sudo apt install tree -y
 
                 sudo apt install tomcat9 tomcat9-admin -y
                 sudo sed -i 's|</tomcat-users>|<role rolename="manager-gui"/>\n<role rolename="manager-script"/>\n<role rolename="manager-jmx"/>\n<role rolename="manager-status"/>\n<user username="admin" password="admin" roles="manager-gui, manager-script, manager-jmx, manager-status"/>\n<user username="deployer" password="deployer" roles="manager-script"/>\n<user username="tomcat" password="s3cret" roles="manager-gui"/>\n</tomcat-users>|g' /etc/tomcat9/tomcat-users.xml

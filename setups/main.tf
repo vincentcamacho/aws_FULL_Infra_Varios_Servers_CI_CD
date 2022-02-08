@@ -23,23 +23,34 @@ module "vm_jenkins_master" {
   win_server_ami   = var.UBUNTU_AMI
   region           = var.REGION
   tipo_instancia   = var.TIPO_MEDIANA
+
+  ip_server_docker         = var.ip_docker
+  ip_server_tomcat         = var.ip_tomcat
+  ip_server_ansible        = var.ip_ansible
+  ip_server_jenkins_slave  = var.ip_jenkins_slave
+  ip_server_k8s_master     = var.ip_k8_master
+  ip_server_k8s_worker_1   = var.ip_k8_worker_1
+  ip_server_k8s_worker_2   = var.ip_k8_worker_2
+  ip_server_puppet_master  = var.ip_puppet_master
+  ip_server_puppet_client  = var.ip_puppet_client
+  ip_server_maven          = var.ip_maven
 }
 
-module "vm_maven" {
-  source           = "../modules/Maven/ec2-maven"
-  llave_ssh        = aws_key_pair.mi_ssh_key.key_name
-  server_role      = "maven"
-  usuario_ansible  = "ansibleadmin"
-  contrasena_user  = "123"
-  proyecto         = var.NOMBRE_PROYECTO
-  los_IDs_subredes = module.subredes_publicas.IDs_subredes
-  ip_fija_privada  = var.ip_maven
-  los_SG           = aws_security_group.mi_sec_group.id
-  AZs              = var.AV_ZONES
-  win_server_ami   = var.UBUNTU_AMI
-  region           = var.REGION
-  tipo_instancia   = var.TIPO_MICRO
-}
+# module "vm_maven" {
+#   source           = "../modules/Maven/ec2-maven"
+#   llave_ssh        = aws_key_pair.mi_ssh_key.key_name
+#   server_role      = "maven"
+#   usuario_ansible  = "ansibleadmin"
+#   contrasena_user  = "123"
+#   proyecto         = var.NOMBRE_PROYECTO
+#   los_IDs_subredes = module.subredes_publicas.IDs_subredes
+#   ip_fija_privada  = var.ip_maven
+#   los_SG           = aws_security_group.mi_sec_group.id
+#   AZs              = var.AV_ZONES
+#   win_server_ami   = var.UBUNTU_AMI
+#   region           = var.REGION
+#   tipo_instancia   = var.TIPO_MICRO
+# }
 
 # module "vm_jenkins_slave" {
 #   source           = "../modules/Jenkins/ec2-jenkins-slave"
@@ -57,64 +68,65 @@ module "vm_maven" {
 #   tipo_instancia   = var.TIPO_PEQUENA
 # }
 
-module "vm_tomcat" {
-  source           = "../modules/Tomcat_Server/ec2-tomcat"
+# module "vm_tomcat" {
+#   source           = "../modules/Tomcat_Server/ec2-tomcat"
+#   llave_ssh        = aws_key_pair.mi_ssh_key.key_name
+#   server_role      = "tomcat"
+#   usuario_ansible  = "ansibleadmin"
+#   contrasena_user  = "123"
+#   proyecto         = var.NOMBRE_PROYECTO
+#   los_IDs_subredes = module.subredes_publicas.IDs_subredes
+#   ip_fija_privada  = var.ip_tomcat
+#   los_SG           = aws_security_group.mi_sec_group.id
+#   AZs              = var.AV_ZONES
+#   win_server_ami   = var.UBUNTU_AMI
+#   region           = var.REGION
+#   tipo_instancia   = var.TIPO_MICRO
+# }
+
+module "vm_ansible" {
+  source           = "../modules/Ansible/ec2-ansible"
   llave_ssh        = aws_key_pair.mi_ssh_key.key_name
-  server_role      = "tomcat"
+  server_role      = "ansible"
   usuario_ansible  = "ansibleadmin"
   contrasena_user  = "123"
   proyecto         = var.NOMBRE_PROYECTO
   los_IDs_subredes = module.subredes_publicas.IDs_subredes
-  ip_fija_privada  = var.ip_tomcat
+  ip_fija_privada  = var.ip_ansible
   los_SG           = aws_security_group.mi_sec_group.id
   AZs              = var.AV_ZONES
   win_server_ami   = var.UBUNTU_AMI
   region           = var.REGION
-  tipo_instancia   = var.TIPO_MICRO
+  tipo_instancia   = var.TIPO_MEDIANA
+
+  ip_server_docker         = var.ip_docker
+  ip_server_tomcat         = var.ip_tomcat
+  ip_server_jenkins_master = var.ip_jenkins_master
+  ip_server_jenkins_slave  = var.ip_jenkins_slave
+  ip_server_k8s_master     = var.ip_k8_master
+  ip_server_k8s_worker_1   = var.ip_k8_worker_1
+  ip_server_k8s_worker_2   = var.ip_k8_worker_2
+  ip_server_puppet_master  = var.ip_puppet_master
+  ip_server_puppet_client  = var.ip_puppet_client
+  ip_server_maven          = var.ip_maven
 }
 
-# module "vm_ansible" {
-#   source           = "../modules/Ansible/ec2-ansible"
-#   llave_ssh        = aws_key_pair.mi_ssh_key.key_name
-#   server_role      = "ansible"
-#   usuario_ansible  = "ansibleadmin"
-#   contrasena_user  = "123"
-#   proyecto         = var.NOMBRE_PROYECTO
-#   los_IDs_subredes = module.subredes_publicas.IDs_subredes
-#   ip_fija_privada  = var.ip_ansible
-#   los_SG           = aws_security_group.mi_sec_group.id
-#   AZs              = var.AV_ZONES
-#   win_server_ami   = var.UBUNTU_AMI
-#   region           = var.REGION
-#   tipo_instancia   = var.TIPO_MEDIANA
-
-#   ip_server_docker         = var.ip_docker
-#   ip_server_tomcat         = var.ip_tomcat
-#   ip_server_jenkins_master = var.ip_jenkins_master
-#   ip_server_jenkins_slave  = var.ip_jenkins_slave
-#   ip_server_k8s_master     = var.ip_k8_master
-#   ip_server_k8s_worker_1   = var.ip_k8_worker_1
-#   ip_server_k8s_worker_2   = var.ip_k8_worker_2
-#   ip_server_puppet_master  = var.ip_puppet_master
-#   ip_server_puppet_client  = var.ip_puppet_client
-# }
-
-# module "vm_docker" {
-#   source           = "../modules/Docker/ec2-docker"
-#   llave_ssh        = aws_key_pair.mi_ssh_key.key_name
-#   server_role      = "docker"
-#   usuario_ansible  = "ansibleadmin"
-#   usuario_docker   = "dockeradmin"
-#   contrasena_user  = "123"
-#   proyecto         = var.NOMBRE_PROYECTO
-#   los_IDs_subredes = module.subredes_publicas.IDs_subredes
-#   ip_fija_privada  = var.ip_docker
-#   los_SG           = aws_security_group.mi_sec_group.id
-#   AZs              = var.AV_ZONES
-#   win_server_ami   = var.UBUNTU_AMI
-#   region           = var.REGION
-#   tipo_instancia   = var.TIPO_MEDIANA
-# }
+module "vm_docker" {
+  source           = "../modules/Docker/ec2-docker"
+  llave_ssh        = aws_key_pair.mi_ssh_key.key_name
+  server_role      = "docker"
+  usuario_ansible  = "ansibleadmin"
+  usuario_docker   = "dockeradmin"
+  contrasena_user  = "123"
+  proyecto         = var.NOMBRE_PROYECTO
+  los_IDs_subredes = module.subredes_publicas.IDs_subredes
+  ip_fija_privada  = var.ip_docker
+  los_SG           = aws_security_group.mi_sec_group.id
+  AZs              = var.AV_ZONES
+  win_server_ami   = var.UBUNTU_AMI
+  region           = var.REGION
+  tipo_instancia   = var.TIPO_MEDIANA
+}
 
 
 # module "vm_puppet_master" {

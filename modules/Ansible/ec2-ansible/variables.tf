@@ -20,4 +20,4 @@ variable "ip_server_k8s_worker_1" {}
 variable "ip_server_k8s_worker_2" {}
 variable "ip_server_puppet_master" {}
 variable "ip_server_puppet_client" {}
-
+variable "ip_server_maven" {}
