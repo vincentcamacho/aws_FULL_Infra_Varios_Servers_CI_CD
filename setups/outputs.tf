@@ -14,8 +14,8 @@ output "Ip_PUBLICA_Master_Jenkins" { value = module.vm_jenkins_master.mis_ip_pub
 # output "Ip_privada_Server_Tomcat" { value = module.vm_tomcat.mis_ip_privadas }
 # output "Ip_PUBLICA_Server_Tomcat" { value = module.vm_tomcat.mis_ip_publicas }
 
-# output "Ip_privada_Server_Ansible" { value = module.vm_ansible.mis_ip_privadas }
-# output "Ip_PUBLICA_Server_Ansible" { value = module.vm_ansible.mis_ip_publicas }
+output "Ip_privada_Server_Ansible" { value = module.vm_ansible.mis_ip_privadas }
+output "Ip_PUBLICA_Server_Ansible" { value = module.vm_ansible.mis_ip_publicas }
 
 output "Ip_privada_Server_Docker" { value = module.vm_docker.mis_ip_privadas }
 output "Ip_PUBLICA_Server_Docker" { value = module.vm_docker.mis_ip_publicas }
@@ -26,11 +26,11 @@ output "Ip_PUBLICA_Server_Docker" { value = module.vm_docker.mis_ip_publicas }
 # output "Ip_privada_PUPPET_Client" { value = module.vm_puppet_client.mis_ip_privadas }
 # output "Ip_PUBLICA_PUPPET_Client" { value = module.vm_puppet_client.mis_ip_publicas }
 
-# output "Ip_privada_K8s_MASTER" { value = module.vm_k8_master.mis_ip_privadas }
-# output "Ip_PUBLICA_K8s_MASTER" { value = module.vm_k8_master.mis_ip_publicas }
+output "Ip_privada_K8s_MASTER" { value = module.vm_k8_master.mis_ip_privadas }
+output "Ip_PUBLICA_K8s_MASTER" { value = module.vm_k8_master.mis_ip_publicas }
 
-# output "Ip_privada_K8s_Worker_1" { value = module.vm_k8_worker_1.mis_ip_privadas }
-# output "Ip_PUBLICA_K8s_Worker_1" { value = module.vm_k8_worker_1.mis_ip_publicas }
+output "Ip_privada_K8s_Worker_1" { value = module.vm_k8_worker_1.mis_ip_privadas }
+output "Ip_PUBLICA_K8s_Worker_1" { value = module.vm_k8_worker_1.mis_ip_publicas }
 
-# output "Ip_privada_K8s_Worker_2" { value = module.vm_k8_worker_2.mis_ip_privadas }
-# output "Ip_PUBLICA_K8s_Worker_2" { value = module.vm_k8_worker_2.mis_ip_publicas }
+output "Ip_privada_K8s_Worker_2" { value = module.vm_k8_worker_2.mis_ip_privadas }
+output "Ip_PUBLICA_K8s_Worker_2" { value = module.vm_k8_worker_2.mis_ip_publicas }

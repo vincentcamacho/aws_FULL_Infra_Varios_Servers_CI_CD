@@ -15,6 +15,7 @@ locals {
     { puerto = 6443, resumen = "K8s API server" },
     { puerto = 2379, resumen = "K8s etcd server client API" },
     { puerto = 2380, resumen = "K8s etcd server client API" },
+    { puerto = 10248, resumen = "Curl healthz - Error nulo que me dio" },
     { puerto = 10250, resumen = "K8s Kubelet API" },
     { puerto = 10251, resumen = "K8s kube-scheduler" },
     { puerto = 10252, resumen = "K8s kube-controller-manager" }

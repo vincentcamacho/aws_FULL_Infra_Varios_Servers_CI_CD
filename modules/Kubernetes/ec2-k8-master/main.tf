@@ -41,6 +41,11 @@ data "template_file" "userdata_linux_ubuntu" {
                 echo "$usuario ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
                 echo "$usuario ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers.d/90-cloud-init-users
 
+                #Permitir autenticacion sin necesidad de llave SSH, con simple usuario y password
+                sudo sed -i 's/^PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config
+                sudo sed -i 's/^#PubkeyAuthentication yes/PubkeyAuthentication yes/' /etc/ssh/sshd_config
+                sudo service sshd restart
+
                 sudo ufw disable
                 sudo apt update -y && sudo apt upgrade -y && sudo apt install tree -y
 
@@ -78,15 +83,44 @@ data "template_file" "userdata_linux_ubuntu" {
                 sudo chmod 666 /var/run/docker.sock
 
                 #Agregar otro usuario para que administre Docker
-                usuario=${var.usuario_docker}
+                usuario=${var.usuario_jenkins}
                 sudo useradd -U $usuario -m -s /bin/bash -p $usuario
                 sudo usermod -aG docker $usuario
                 echo "$usuario:${var.contrasena_user}" | chpasswd
 
-                #Tambien agregar al usuario AnsibleAdmin al grupo Docker
+                #Agregar a los archivos sudoers este nuevo usuario
+                echo "$usuario ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+                echo "$usuario ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers.d/90-cloud-init-users
+
+                #APROVECHEMOS para tambien agregar al usuario ANSIBLE al grupo Docker
                 sudo usermod -aG docker ${var.usuario_ansible}
 
-                #Add the Docker Daemon configurations to use systemd as the cgroup driver
+                #Change the docker.sock permission
+                sudo chmod 666 /var/run/docker.sock
+
+                #Crear alias SUPER UTILES para el usuario nuevo creado
+                echo "alias dp='docker ps'" | sudo tee -a /home/$usuario/.bashrc
+                echo "alias dpa='docker ps -a'" | sudo tee -a /home/$usuario/.bashrc
+                echo "alias di='docker images'" | sudo tee -a /home/$usuario/.bashrc
+                echo "alias ds='docker stop'" | sudo tee -a /home/$usuario/.bashrc
+                echo "alias drm='docker rm -f'" | sudo tee -a /home/$usuario/.bashrc
+                echo "alias dka='docker rm \$(docker stop \$(docker ps -aq))'" | sudo tee -a /home/$usuario/.bashrc
+                echo "alias drd='docker run -d'" | sudo tee -a /home/$usuario/.bashrc
+                echo "alias dki='docker rmi -f \$(docker images -aq)'" | sudo tee -a /home/$usuario/.bashrc
+                echo "alias k='kubectl'" | sudo tee -a /home/$usuario/.bashrc
+
+                #Crear alias SUPER UTILES para el usuario "ubuntu" que viene por defecto en la EC2
+                echo "alias dp='docker ps'" | sudo tee -a /home/ubuntu/.bashrc
+                echo "alias dpa='docker ps -a'" | sudo tee -a /home/ubuntu/.bashrc
+                echo "alias di='docker images'" | sudo tee -a /home/ubuntu/.bashrc
+                echo "alias ds='docker stop'" | sudo tee -a /home/ubuntu/.bashrc
+                echo "alias drm='docker rm -f'" | sudo tee -a /home/ubuntu/.bashrc
+                echo "alias dka='docker rm \$(docker stop \$(docker ps -aq))'" | sudo tee -a /home/ubuntu/.bashrc
+                echo "alias drd='docker run -d'" | sudo tee -a /home/ubuntu/.bashrc
+                echo "alias dki='docker rmi -f \$(docker images -aq)'" | sudo tee -a /home/ubuntu/.bashrc
+                echo "alias k='kubectl'" | sudo tee -a /home/ubuntu/.bashrc
+
+                Add the Docker Daemon configurations to use systemd as the cgroup driver
                 sudo cat <<EOF | sudo tee /etc/docker/daemon.json
                 {
                   "exec-opts": ["native.cgroupdriver=systemd"],
@@ -121,25 +155,14 @@ data "template_file" "userdata_linux_ubuntu" {
                 #Install Kubeadm,Kubelet and Kubectl on All Node
                 sudo apt install kubelet kubeadm kubectl -y
 
-                #Crear alias para kubectl
-                alias k=kubectl
-                complete -F __start_kubectl k
-
                 #Hold the packages to being upgrade
                 sudo apt-mark hold kubelet kubeadm kubectl
-
-
-
-                sudo sed -i 's/^PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config
-                sudo sed -i 's/^#PubkeyAuthentication yes/PubkeyAuthentication yes/' /etc/ssh/sshd_config
-                sudo service sshd restart
 
                 echo "El rol de este servidor es: ${var.server_role}" > /home/ubuntu/b_${var.server_role}.txt
                 FINAL=$(date "+%F %H:%M:%S")
                 echo "Hora de finalizacion del script: $FINAL" >> /home/ubuntu/a_${var.server_role}.txt
                 
-                sudo reboot
+                # sudo reboot
 
               EOT
 }
-

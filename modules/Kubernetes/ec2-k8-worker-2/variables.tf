@@ -1,7 +1,7 @@
 variable "llave_ssh" {}
 variable "server_role" {}
 variable "usuario_ansible" {}
-variable "usuario_docker" {}
+variable "usuario_jenkins" {}
 variable "contrasena_user" {}
 variable "proyecto" {}
 variable "los_IDs_subredes" {}
