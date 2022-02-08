@@ -84,14 +84,26 @@ data "template_file" "userdata_linux_ubuntu" {
                 #Change the docker.sock permission
                 sudo chmod 666 /var/run/docker.sock
 
-                #Crear alias SUPER UTILES para Docker
-                alias dp='docker ps'
-                alias dpa='docker ps -a'
-                alias di='docker images'
-                alias ds='docker stop'
-                alias drm='docker rm -f'
-                alias dka='docker rm $(docker stop $(docker ps -aq))'
-                alias drd='docker run -d'
+                #Crear alias SUPER UTILES para el usuario nuevo creado
+                echo "alias dp='docker ps'" | sudo tee -a /home/$usuario/.bashrc
+                echo "alias dpa='docker ps -a'" | sudo tee -a /home/$usuario/.bashrc
+                echo "alias di='docker images'" | sudo tee -a /home/$usuario/.bashrc
+                echo "alias ds='docker stop'" | sudo tee -a /home/$usuario/.bashrc
+                echo "alias drm='docker rm -f'" | sudo tee -a /home/$usuario/.bashrc
+                echo "alias dka='docker rm \$(docker stop \$(docker ps -aq))'" | sudo tee -a /home/$usuario/.bashrc
+                echo "alias drd='docker run -d'" | sudo tee -a /home/$usuario/.bashrc
+                echo "alias dki='docker rmi -f \$(docker images -aq)'" | sudo tee -a /home/$usuario/.bashrc
+
+                #Crear alias SUPER UTILES para el usuario "ubuntu" que viene por defecto en la EC2
+                echo "alias dp='docker ps'" | sudo tee -a ~/.bashrc
+                echo "alias dpa='docker ps -a'" | sudo tee -a ~/.bashrc
+                echo "alias di='docker images'" | sudo tee -a ~/.bashrc
+                echo "alias ds='docker stop'" | sudo tee -a ~/.bashrc
+                echo "alias drm='docker rm -f'" | sudo tee -a ~/.bashrc
+                echo "alias dka='docker rm \$(docker stop \$(docker ps -aq))'" | sudo tee -a ~/.bashrc
+                echo "alias drd='docker run -d'" | sudo tee -a ~/.bashrc
+                echo "alias dki='docker rmi -f \$(docker images -aq)'" | sudo tee -a ~/.bashrc
+                
 
                 sudo sed -i 's/^PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config
                 sudo sed -i 's/^#PubkeyAuthentication yes/PubkeyAuthentication yes/' /etc/ssh/sshd_config
