@@ -99,6 +99,7 @@ data "template_file" "userdata_linux_ubuntu" {
                 sudo chmod 666 /var/run/docker.sock
 
                 #Crear alias SUPER UTILES para el usuario nuevo creado
+                echo "alias d='docker'" | sudo tee -a /home/$usuario/.bashrc
                 echo "alias dp='docker ps'" | sudo tee -a /home/$usuario/.bashrc
                 echo "alias dpa='docker ps -a'" | sudo tee -a /home/$usuario/.bashrc
                 echo "alias di='docker images'" | sudo tee -a /home/$usuario/.bashrc
@@ -108,17 +109,9 @@ data "template_file" "userdata_linux_ubuntu" {
                 echo "alias drd='docker run -d'" | sudo tee -a /home/$usuario/.bashrc
                 echo "alias dki='docker rmi -f \$(docker images -aq)'" | sudo tee -a /home/$usuario/.bashrc
                 echo "alias k='kubectl'" | sudo tee -a /home/$usuario/.bashrc
+                echo "alias kp='kubectl get pods -o wide'" | sudo tee -a /home/$usuario/.bashrc
+                echo "alias ks='kubectl get svc -o wide'" | sudo tee -a /home/$usuario/.bashrc
 
-                #Crear alias SUPER UTILES para el usuario "ubuntu" que viene por defecto en la EC2
-                echo "alias dp='docker ps'" | sudo tee -a /home/ubuntu/.bashrc
-                echo "alias dpa='docker ps -a'" | sudo tee -a /home/ubuntu/.bashrc
-                echo "alias di='docker images'" | sudo tee -a /home/ubuntu/.bashrc
-                echo "alias ds='docker stop'" | sudo tee -a /home/ubuntu/.bashrc
-                echo "alias drm='docker rm -f'" | sudo tee -a /home/ubuntu/.bashrc
-                echo "alias dka='docker rm \$(docker stop \$(docker ps -aq))'" | sudo tee -a /home/ubuntu/.bashrc
-                echo "alias drd='docker run -d'" | sudo tee -a /home/ubuntu/.bashrc
-                echo "alias dki='docker rmi -f \$(docker images -aq)'" | sudo tee -a /home/ubuntu/.bashrc
-                echo "alias k='kubectl'" | sudo tee -a /home/ubuntu/.bashrc
 
                 Add the Docker Daemon configurations to use systemd as the cgroup driver
                 sudo cat <<EOF | sudo tee /etc/docker/daemon.json
