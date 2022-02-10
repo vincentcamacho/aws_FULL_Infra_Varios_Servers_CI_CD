@@ -179,56 +179,56 @@ module "vm_docker" {
 #   ip_server_k8s_worker_2   = var.ip_k8_worker_2
 # }
 
-# module "vm_k8_master" {
-#   source           = "../modules/Kubernetes/ec2-k8-master"
-#   llave_ssh        = aws_key_pair.mi_ssh_key.key_name
-#   proyecto         = var.NOMBRE_PROYECTO
-#   server_role      = "k8master"
-#   usuario_ansible  = "ansibleadmin"
-#   usuario_jenkins  = "k8admin"
-#   contrasena_user  = "123"
-#   los_IDs_subredes = module.subredes_publicas.IDs_subredes
-#   ip_nodos_master  = [var.ip_k8_master]
-#   ip_nodos_worker  = [var.ip_k8_worker_1, var.ip_k8_worker_2]
-#   los_SG           = aws_security_group.mi_sec_group.id
-#   AZs              = var.AV_ZONES
-#   win_server_ami   = var.UBUNTU_AMI
-#   region           = var.REGION
-#   tipo_instancia   = var.TIPO_GRANDE
-# }
+module "vm_k8_master" {
+  source           = "../modules/Kubernetes/ec2-k8-master"
+  llave_ssh        = aws_key_pair.mi_ssh_key.key_name
+  proyecto         = var.NOMBRE_PROYECTO
+  server_role      = "k8master"
+  usuario_ansible  = "ansibleadmin"
+  usuario_jenkins  = "k8admin"
+  contrasena_user  = "123"
+  los_IDs_subredes = module.subredes_publicas.IDs_subredes
+  ip_nodos_master  = [var.ip_k8_master]
+  ip_nodos_worker  = [var.ip_k8_worker_1, var.ip_k8_worker_2]
+  los_SG           = aws_security_group.mi_sec_group.id
+  AZs              = var.AV_ZONES
+  win_server_ami   = var.UBUNTU_AMI
+  region           = var.REGION
+  tipo_instancia   = var.TIPO_GRANDE
+}
 
-# module "vm_k8_worker_1" {
-#   source           = "../modules/Kubernetes/ec2-k8-worker-1"
-#   llave_ssh        = aws_key_pair.mi_ssh_key.key_name
-#   proyecto         = var.NOMBRE_PROYECTO
-#   server_role      = "k8worker1"
-#   usuario_ansible  = "ansibleadmin"
-#   usuario_jenkins  = "k8admin"
-#   contrasena_user  = "123"
-#   los_IDs_subredes = module.subredes_publicas.IDs_subredes
-#   ip_nodos_master  = [var.ip_k8_master]
-#   ip_nodos_worker  = [var.ip_k8_worker_1, var.ip_k8_worker_2]
-#   los_SG           = aws_security_group.mi_sec_group.id
-#   AZs              = var.AV_ZONES
-#   win_server_ami   = var.UBUNTU_AMI
-#   region           = var.REGION
-#   tipo_instancia   = var.TIPO_MEDIANA
-# }
+module "vm_k8_worker_1" {
+  source           = "../modules/Kubernetes/ec2-k8-worker-1"
+  llave_ssh        = aws_key_pair.mi_ssh_key.key_name
+  proyecto         = var.NOMBRE_PROYECTO
+  server_role      = "k8worker1"
+  usuario_ansible  = "ansibleadmin"
+  usuario_jenkins  = "k8admin"
+  contrasena_user  = "123"
+  los_IDs_subredes = module.subredes_publicas.IDs_subredes
+  ip_nodos_master  = [var.ip_k8_master]
+  ip_nodos_worker  = [var.ip_k8_worker_1, var.ip_k8_worker_2]
+  los_SG           = aws_security_group.mi_sec_group.id
+  AZs              = var.AV_ZONES
+  win_server_ami   = var.UBUNTU_AMI
+  region           = var.REGION
+  tipo_instancia   = var.TIPO_MEDIANA
+}
 
-# module "vm_k8_worker_2" {
-#   source           = "../modules/Kubernetes/ec2-k8-worker-2"
-#   llave_ssh        = aws_key_pair.mi_ssh_key.key_name
-#   proyecto         = var.NOMBRE_PROYECTO
-#   server_role      = "k8worker2"
-#   usuario_ansible  = "ansibleadmin"
-#   usuario_jenkins  = "k8admin"
-#   contrasena_user  = "123"
-#   los_IDs_subredes = module.subredes_publicas.IDs_subredes
-#   ip_nodos_master  = [var.ip_k8_master]
-#   ip_nodos_worker  = [var.ip_k8_worker_1, var.ip_k8_worker_2]
-#   los_SG           = aws_security_group.mi_sec_group.id
-#   AZs              = var.AV_ZONES
-#   win_server_ami   = var.UBUNTU_AMI
-#   region           = var.REGION
-#   tipo_instancia   = var.TIPO_MEDIANA
-# }
+module "vm_k8_worker_2" {
+  source           = "../modules/Kubernetes/ec2-k8-worker-2"
+  llave_ssh        = aws_key_pair.mi_ssh_key.key_name
+  proyecto         = var.NOMBRE_PROYECTO
+  server_role      = "k8worker2"
+  usuario_ansible  = "ansibleadmin"
+  usuario_jenkins  = "k8admin"
+  contrasena_user  = "123"
+  los_IDs_subredes = module.subredes_publicas.IDs_subredes
+  ip_nodos_master  = [var.ip_k8_master]
+  ip_nodos_worker  = [var.ip_k8_worker_1, var.ip_k8_worker_2]
+  los_SG           = aws_security_group.mi_sec_group.id
+  AZs              = var.AV_ZONES
+  win_server_ami   = var.UBUNTU_AMI
+  region           = var.REGION
+  tipo_instancia   = var.TIPO_MEDIANA
+}
