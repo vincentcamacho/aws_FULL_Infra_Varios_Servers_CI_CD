@@ -135,14 +135,18 @@ data "template_file" "userdata_linux_ubuntu" {
                 echo "alias dki='docker rmi -f \$(docker images -aq)'" | sudo tee -a /home/$usuario/.bashrc
 
                 echo "alias k='kubectl'" | sudo tee -a /home/$usuario/.bashrc
-                echo "alias kp='kubectl get pods -o wide'" | sudo tee -a /home/$usuario/.bashrc
-                echo "alias ks='kubectl get svc -o wide'" | sudo tee -a /home/$usuario/.bashrc
-                echo "alias k='kubectl'" | sudo tee -a /home/$usuario/.bashrc
                 echo "alias kgp='kubectl get pods -o wide'" | sudo tee -a /home/$usuario/.bashrc
+                echo "alias kgpa='kubectl get pods -o wide --all-namespaces'" | sudo tee -a /home/$usuario/.bashrc
                 echo "alias kgs='kubectl get svc -o wide'" | sudo tee -a /home/$usuario/.bashrc
                 echo "alias kgd='kubectl get deployment -o wide'" | sudo tee -a /home/$usuario/.bashrc
-                echo "alias kad='kubectl apply -f'" | sudo tee -a /home/$usuario/.bashrc
-                echo "alias kdd='kubectl delete -f'" | sudo tee -a /home/$usuario/.bashrc
+                echo "alias kgn='kubectl get nodes'" | sudo tee -a /home/$usuario/.bashrc
+                echo "alias kgc='kubectl get csr'" | sudo tee -a /home/$usuario/.bashrc
+                echo "alias kge='kubectl get events --sort-by=\".metadata.creationTimestamp\"'" | sudo tee -a /home/$usuario/.bashrc
+                echo "alias kgea='kubectl get events --all-namespaces  --sort-by=\".metadata.creationTimestamp\"'" | sudo tee -a /home/$usuario/.bashrc
+                echo "alias kaf='kubectl apply -f'" | sudo tee -a /home/$usuario/.bashrc
+                echo "alias kdf='kubectl delete -f'" | sudo tee -a /home/$usuario/.bashrc
+                echo "alias kad='kubectl apply deploy'" | sudo tee -a /home/$usuario/.bashrc
+                echo "alias kdd='kubectl delete deploy'" | sudo tee -a /home/$usuario/.bashrc                
                 echo "alias kcd='kubectl create deployment'" | sudo tee -a /home/$usuario/.bashrc
                 echo "alias kep='kubectl explain pods'" | sudo tee -a /home/$usuario/.bashrc
                 echo "alias kdn='kubectl describe nodes'" | sudo tee -a /home/$usuario/.bashrc
@@ -150,12 +154,20 @@ data "template_file" "userdata_linux_ubuntu" {
                 echo "alias kl='kubectl logs'" | sudo tee -a /home/$usuario/.bashrc
                 echo "alias klf='kubectl logs -f'" | sudo tee -a /home/$usuario/.bashrc
                 echo "alias kld='kubectl logs deploy'" | sudo tee -a /home/$usuario/.bashrc
-                echo "alias kcfg='kubectl config view'" | sudo tee -a /home/$usuario/.bashrc
-                echo "alias kclt='kubectl cluster-info'" | sudo tee -a /home/$usuario/.bashrc
-                echo "alias kv='kubectl version'" | sudo tee -a /home/$usuario/.bashrc
+                echo "alias klet='kubelet --version'" | sudo tee -a /home/$usuario/.bashrc
+                echo "alias kadm='kubeadm version'" | sudo tee -a /home/$usuario/.bashrc
+                echo "alias kclv='kubectl version'" | sudo tee -a /home/$usuario/.bashrc
+                echo "alias kcli='kubectl cluster-info'" | sudo tee -a /home/$usuario/.bashrc
+                echo "alias kclc='kubectl config view'" | sudo tee -a /home/$usuario/.bashrc
+
+                echo "alias kcdn='kubectl create deployment nginx --image=nginx'" | sudo tee -a /home/$usuario/.bashrc
+                echo "alias kedn='kubectl expose deploy nginx --port 80 --target-port 80 --type NodePort && kubectl get svc'" | sudo tee -a /home/$usuario/.bashrc
+                
                 
 
                 echo "net.ipv4.conf.all.forwarding=1" | sudo tee -a /etc/sysctl.conf
+                sudo modprobe br_netfilter
+                sudo sysctl net.bridge.bridge-nf-call-iptables=1
 
 
                 #Add Kubernetes GPG key in all node
@@ -172,6 +184,24 @@ data "template_file" "userdata_linux_ubuntu" {
 
                 #Hold the packages to being upgrade
                 sudo apt-mark hold kubelet kubeadm kubectl
+
+                echo "export KUBECONFIG=/etc/kubernetes/admin.conf'" | sudo tee -a /etc/profile
+
+                #INCIALIZAMOS MASTER, YA INSTALADO KUBERNETES
+                sudo kubeadm init --pod-network-cidr=10.244.0.0/16
+                sudo mkdir -p /home/$usuario/.kube
+                sudo cp -i /etc/kubernetes/admin.conf /home/$usuario/.kube/config
+                sudo chown $(id -u $usuario):$(id -g $usuario) /home/$usuario/.kube/config
+
+                #Configuramos la network o el manager de subredes
+                #FLANNEL - https://github.com/flannel-io/flannel#deploying-flannel-manually
+                kubectl apply -f https://raw.githubusercontent.com/flannel-io/flannel/master/Documentation/kube-flannel.yml
+
+                #Guardar comando de JOIN que sera usado en los WORKER Nodes
+                mi_ip_master=${var.ip_nodos_master[0]}
+                mi_bootstrap_token=$(sudo kubeadm token list | awk 'NR == 2 {print $1}')
+                mi_token_ca_hash=$(openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //')
+                echo "sudo kubeadm join $mi_ip_master:6443 --token=$mi_bootstrap_token --discovery-token-ca-cert-hash sha256:$mi_token_ca_hash" | sudo tee -a /home/$usuario/comando_JOIN_para_Nodos.txt
 
                 echo "El rol de este servidor es: ${var.server_role}" > /home/ubuntu/b_${var.server_role}.txt
                 FINAL=$(date "+%F %H:%M:%S")

@@ -79,8 +79,12 @@ data "template_file" "userdata_linux_ubuntu" {
                 echo 'export M2_HOME=/opt/maven' >> /etc/profile.d/maven.sh
                 echo 'export MAVEN_HOME=/opt/maven' >> /etc/profile.d/maven.sh
                 echo 'export PATH=/opt/maven/bin:$PATH' >> /etc/profile.d/maven.sh
-                
                 source /etc/profile.d/maven.sh
+
+                echo "export JENKINS_HOME=/var/lib/jenkins" | sudo tee -a /etc/profile
+                echo "export JAVA_HOME=/usr/lib/jvm/default-java" | sudo tee -a /etc/profile
+                echo "export MAVEN_HOME=/opt/maven" | sudo tee -a /etc/profile
+                echo "export GIT_HOME=/usr/bin/git" | sudo tee -a /etc/profile
 
                 # wget -q -O - https://pkg.jenkins.io/debian-stable/jenkins.io.key | apt-key add -
                 # sh -c 'echo deb http://pkg.jenkins.io/debian-stable binary/ > /etc/apt/sources.list.d/jenkins.list'
