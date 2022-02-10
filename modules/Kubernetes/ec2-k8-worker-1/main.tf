@@ -100,21 +100,6 @@ data "template_file" "userdata_linux_ubuntu" {
                 #Change the docker.sock permission
                 sudo chmod 666 /var/run/docker.sock
 
-                #Crear alias SUPER UTILES para el usuario nuevo creado
-                echo "alias d='docker'" | sudo tee -a /home/$usuario/.bashrc
-                echo "alias dp='docker ps'" | sudo tee -a /home/$usuario/.bashrc
-                echo "alias dpa='docker ps -a'" | sudo tee -a /home/$usuario/.bashrc
-                echo "alias di='docker images'" | sudo tee -a /home/$usuario/.bashrc
-                echo "alias ds='docker stop'" | sudo tee -a /home/$usuario/.bashrc
-                echo "alias drm='docker rm -f'" | sudo tee -a /home/$usuario/.bashrc
-                echo "alias dka='docker rm \$(docker stop \$(docker ps -aq))'" | sudo tee -a /home/$usuario/.bashrc
-                echo "alias drd='docker run -d'" | sudo tee -a /home/$usuario/.bashrc
-                echo "alias dki='docker rmi -f \$(docker images -aq)'" | sudo tee -a /home/$usuario/.bashrc
-                echo "alias k='kubectl'" | sudo tee -a /home/$usuario/.bashrc
-                echo "alias kp='kubectl get pods -o wide'" | sudo tee -a /home/$usuario/.bashrc
-                echo "alias ks='kubectl get svc -o wide'" | sudo tee -a /home/$usuario/.bashrc
-
-
                 Add the Docker Daemon configurations to use systemd as the cgroup driver
                 sudo cat <<EOF | sudo tee /etc/docker/daemon.json
                 {
@@ -137,6 +122,41 @@ data "template_file" "userdata_linux_ubuntu" {
                 sudo systemctl restart docker
 
 
+
+                #Crear alias SUPER UTILES para el usuario nuevo creado
+                echo "alias d='docker'" | sudo tee -a /home/$usuario/.bashrc
+                echo "alias dp='docker ps'" | sudo tee -a /home/$usuario/.bashrc
+                echo "alias dpa='docker ps -a'" | sudo tee -a /home/$usuario/.bashrc
+                echo "alias di='docker images'" | sudo tee -a /home/$usuario/.bashrc
+                echo "alias ds='docker stop'" | sudo tee -a /home/$usuario/.bashrc
+                echo "alias drm='docker rm -f'" | sudo tee -a /home/$usuario/.bashrc
+                echo "alias dka='docker rm \$(docker stop \$(docker ps -aq))'" | sudo tee -a /home/$usuario/.bashrc
+                echo "alias drd='docker run -d'" | sudo tee -a /home/$usuario/.bashrc
+                echo "alias dki='docker rmi -f \$(docker images -aq)'" | sudo tee -a /home/$usuario/.bashrc
+
+                echo "alias k='kubectl'" | sudo tee -a /home/$usuario/.bashrc
+                echo "alias kp='kubectl get pods -o wide'" | sudo tee -a /home/$usuario/.bashrc
+                echo "alias ks='kubectl get svc -o wide'" | sudo tee -a /home/$usuario/.bashrc
+                echo "alias k='kubectl'" | sudo tee -a /home/$usuario/.bashrc
+                echo "alias kgp='kubectl get pods -o wide'" | sudo tee -a /home/$usuario/.bashrc
+                echo "alias kgs='kubectl get svc -o wide'" | sudo tee -a /home/$usuario/.bashrc
+                echo "alias kgd='kubectl get deployment -o wide'" | sudo tee -a /home/$usuario/.bashrc
+                echo "alias kad='kubectl apply -f'" | sudo tee -a /home/$usuario/.bashrc
+                echo "alias kdd='kubectl delete -f'" | sudo tee -a /home/$usuario/.bashrc
+                echo "alias kcd='kubectl create deployment'" | sudo tee -a /home/$usuario/.bashrc
+                echo "alias kep='kubectl explain pods'" | sudo tee -a /home/$usuario/.bashrc
+                echo "alias kdn='kubectl describe nodes'" | sudo tee -a /home/$usuario/.bashrc
+                echo "alias kdp='kubectl describe pods'" | sudo tee -a /home/$usuario/.bashrc
+                echo "alias kl='kubectl logs'" | sudo tee -a /home/$usuario/.bashrc
+                echo "alias klf='kubectl logs -f'" | sudo tee -a /home/$usuario/.bashrc
+                echo "alias kld='kubectl logs deploy'" | sudo tee -a /home/$usuario/.bashrc
+                echo "alias kcfg='kubectl config view'" | sudo tee -a /home/$usuario/.bashrc
+                echo "alias kclt='kubectl cluster-info'" | sudo tee -a /home/$usuario/.bashrc
+                echo "alias kv='kubectl version'" | sudo tee -a /home/$usuario/.bashrc
+                
+
+                echo "net.ipv4.conf.all.forwarding=1" | sudo tee -a /etc/sysctl.conf
+                
 
                 #Add Kubernetes GPG key in all node
                 sudo curl -fsSLo /usr/share/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
