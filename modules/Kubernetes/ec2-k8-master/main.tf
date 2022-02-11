@@ -162,7 +162,7 @@ data "template_file" "userdata_linux_ubuntu" {
 
                 echo "alias kcdn='kubectl create deployment nginx --image=nginx'" | sudo tee -a /home/$usuario/.bashrc
                 echo "alias kedn='kubectl expose deploy nginx --port 80 --target-port 80 --type NodePort && kubectl get svc'" | sudo tee -a /home/$usuario/.bashrc
-                echo "alias kddn='kubectl delete deploy nginx'" | sudo tee -a /home/$usuario/.bashrc                
+                echo "alias kddn='kubectl delete deploy nginx && kubectl delete svc nginx'" | sudo tee -a /home/$usuario/.bashrc                
                 
 
                 echo "net.ipv4.conf.all.forwarding=1" | sudo tee -a /etc/sysctl.conf

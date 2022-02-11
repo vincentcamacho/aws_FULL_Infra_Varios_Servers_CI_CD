@@ -8,6 +8,7 @@ locals {
     { puerto = 3389, resumen = "Puerto RDP" },
     { puerto = 22, resumen = "Puerto SSH" },
     { puerto = 80, resumen = "Puerto HTTP" },
+    { puerto = 53, resumen = "Puerto DNS" },
     { puerto = 443, resumen = "Puerto HTTPS" },
     { puerto = 8080, resumen = "Puerto HTTP_2" },
     { puerto = 8090, resumen = "Puerto HTTP_3" },
@@ -51,6 +52,20 @@ resource "aws_security_group" "mi_sec_group" {
     from_port   = 30000
     to_port     = 32767
     protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  ingress {
+    description = "Lo puse por errores en Ingress K8s"
+    from_port   = 1025
+    to_port     = 65535
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  ingress {
+    description = "Puerto DNS con UDP"
+    from_port   = 53
+    to_port     = 53
+    protocol    = "udp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
