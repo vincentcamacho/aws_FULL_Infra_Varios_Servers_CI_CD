@@ -34,3 +34,9 @@ output "Ip_PUBLICA_K8s_Worker_1" { value = module.vm_k8_worker_1.mis_ip_publicas
 
 output "Ip_privada_K8s_Worker_2" { value = module.vm_k8_worker_2.mis_ip_privadas }
 output "Ip_PUBLICA_K8s_Worker_2" { value = module.vm_k8_worker_2.mis_ip_publicas }
+
+output "Ip_privada_Sonarqube" { value = module.vm_sonarqube.mis_ip_privadas }
+output "Ip_PUBLICA_Sonarqube" { value = module.vm_sonarqube.mis_ip_publicas }
+
+output "Ip_privada_Nexus" { value = module.vm_nexus.mis_ip_privadas }
+output "Ip_PUBLICA_Nexus" { value = module.vm_nexus.mis_ip_publicas }

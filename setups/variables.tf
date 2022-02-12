@@ -20,6 +20,8 @@ variable "ip_puppet_client" { default = "10.0.3.81" }
 variable "ip_k8_master" { default = "10.0.3.100" }
 variable "ip_k8_worker_1" { default = "10.0.3.103" }
 variable "ip_k8_worker_2" { default = "10.0.3.104" }
+variable "ip_sonarqube" { default = "10.0.3.120" }
+variable "ip_nexus" { default = "10.0.3.130" }
 
 variable "TIPO_MICRO" { default = "t2.micro" }
 variable "TIPO_PEQUENA" { default = "t2.small" }
