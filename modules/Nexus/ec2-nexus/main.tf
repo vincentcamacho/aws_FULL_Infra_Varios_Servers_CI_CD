@@ -50,6 +50,21 @@ data "template_file" "userdata_linux_ubuntu" {
                 sudo apt update -y && sudo apt upgrade -y && sudo apt install tree -y
 
 
+                sudo apt install wget -y
+                sudo apt install default-jdk git -y
+                cd /opt/
+                sudo wget https://download.sonatype.com/nexus/3/nexus-3.37.3-02-unix.tar.gz
+                sudo tar -xvf nexus-3.37.3-02-unix.tar.gz
+
+                sudo mv /opt/nexus-3.37.3-02 /opt/nexus
+
+                cd ~
+                sudo useradd -M -d /opt/nexus -s /bin/bash -r ${var.usuario_nexus}
+                sudo bash -c 'echo "${var.usuario_nexus} ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers'
+                sudo bash -c 'echo "${var.usuario_nexus} ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers.d/90-cloud-init-users'
+                sudo chown -R ${var.usuario_nexus}: /opt/nexus
+
+
                 echo "El rol de este servidor es: ${var.server_role}" > /home/ubuntu/b_${var.server_role}.txt
                 FINAL=$(date "+%F %H:%M:%S")
                 echo "Hora de finalizacion del script: $FINAL" >> /home/ubuntu/a_${var.server_role}.txt
