@@ -266,3 +266,20 @@ module "vm_nexus" {
   region           = var.REGION
   tipo_instancia   = var.TIPO_MEDIANA
 }
+
+module "vm_artifactory" {
+  source           = "../modules/Artifactory/ec2-artifactory"
+  llave_ssh        = aws_key_pair.mi_ssh_key.key_name
+  server_role      = "artifactory"
+  usuario_ansible  = "ansibleadmin"
+  usuario_artifact = "artifadmin"
+  contrasena_user  = "123"
+  proyecto         = var.NOMBRE_PROYECTO
+  los_IDs_subredes = module.subredes_publicas.IDs_subredes
+  ip_fija_privada  = var.ip_artifactory
+  los_SG           = aws_security_group.mi_sec_group.id
+  AZs              = var.AV_ZONES
+  win_server_ami   = var.UBUNTU_AMI
+  region           = var.REGION
+  tipo_instancia   = var.TIPO_MEDIANA
+}

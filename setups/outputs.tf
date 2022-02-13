@@ -40,3 +40,6 @@ output "Ip_PUBLICA_Sonarqube" { value = module.vm_sonarqube.mis_ip_publicas }
 
 output "Ip_privada_Nexus" { value = module.vm_nexus.mis_ip_privadas }
 output "Ip_PUBLICA_Nexus" { value = module.vm_nexus.mis_ip_publicas }
+
+output "Ip_privada_Artifactory" { value = module.vm_artifactory.mis_ip_privadas }
+output "Ip_PUBLICA_Artifactory" { value = module.vm_artifactory.mis_ip_publicas }
