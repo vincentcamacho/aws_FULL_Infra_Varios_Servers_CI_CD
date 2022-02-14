@@ -10,9 +10,11 @@ locals {
     { puerto = 80, resumen = "Puerto HTTP" },
     { puerto = 53, resumen = "Puerto DNS" },
     { puerto = 443, resumen = "Puerto HTTPS" },
-    { puerto = 8080, resumen = "Puerto HTTP_2" },
-    { puerto = 8090, resumen = "Puerto HTTP_3" },
+    { puerto = 8080, resumen = "Puerto Jenkins" },
+    { puerto = 8081, resumen = "Puerto Nexus" },
+    { puerto = 8090, resumen = "Puerto HTTP_4" },
     { puerto = 8140, resumen = "Puerto Puppet" },
+    { puerto = 9000, resumen = "Puerto SonarQube" },
     { puerto = 6443, resumen = "K8s API server" },
     { puerto = 2379, resumen = "K8s etcd server client API" },
     { puerto = 2380, resumen = "K8s etcd server client API" },
@@ -54,13 +56,13 @@ resource "aws_security_group" "mi_sec_group" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-  ingress {
-    description = "Lo puse por errores en Ingress K8s"
-    from_port   = 1025
-    to_port     = 65535
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+  # ingress {
+  #   description = "Lo puse por errores en Ingress K8s"
+  #   from_port   = 1025
+  #   to_port     = 65535
+  #   protocol    = "tcp"
+  #   cidr_blocks = ["0.0.0.0/0"]
+  # }
   ingress {
     description = "Puerto DNS con UDP"
     from_port   = 53

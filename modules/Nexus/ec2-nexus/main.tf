@@ -40,18 +40,19 @@ data "template_file" "userdata_linux_ubuntu" {
 
                 #Agregar otro usuario para que administre Ansible
                 usuario=${var.usuario_ansible}
-                sudo useradd -U $usuario -m -s /bin/bash -p $usuario -G sudo
-                echo "$usuario:${var.contrasena_user}" | chpasswd
-                echo "$usuario ALL=(ALL) NOPASSWD: ALL" >> sudo /etc/sudoers
-                echo "$usuario ALL=(ALL) NOPASSWD: ALL" >> sudo /etc/sudoers.d/90-cloud-init-users
+                sudo useradd -U ${var.usuario_ansible} -m -s /bin/bash -p ${var.usuario_ansible} -G sudo
+                echo "${var.usuario_ansible}:${var.contrasena_user}" | sudo chpasswd
+                sudo bash -c 'echo "${var.usuario_ansible} ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers'
+                sudo bash -c 'echo "${var.usuario_ansible} ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers.d/90-cloud-init-users'
 
 
                 sudo ufw disable
-                sudo apt update -y && sudo apt upgrade -y && sudo apt install tree -y
+                sudo apt update -y && sudo apt upgrade -y
+                sudo apt install tree tldr net-tools -y
 
 
                 sudo apt install wget -y
-                sudo apt install default-jdk git -y
+                sudo apt install openjdk-8-jre-headless git -y
                 cd /opt/
                 sudo wget https://download.sonatype.com/nexus/3/nexus-3.37.3-02-unix.tar.gz
                 sudo tar -xvf nexus-3.37.3-02-unix.tar.gz
@@ -59,11 +60,40 @@ data "template_file" "userdata_linux_ubuntu" {
                 sudo mv /opt/nexus-3.37.3-02 /opt/nexus
 
                 cd ~
-                sudo useradd -M -d /opt/nexus -s /bin/bash -r ${var.usuario_nexus}
+                sudo useradd -M -d /opt/nexus -s /bin/bash -r ${var.usuario_nexus} -G sudo
+                echo "${var.usuario_nexus}:${var.contrasena_user}" | sudo chpasswd
                 sudo bash -c 'echo "${var.usuario_nexus} ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers'
                 sudo bash -c 'echo "${var.usuario_nexus} ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers.d/90-cloud-init-users'
-                sudo chown -R ${var.usuario_nexus}: /opt/nexus
 
+                sudo chown -R ${var.usuario_nexus}: /opt/nexus
+                sudo chown -R ${var.usuario_nexus}: /opt/sonatype-work
+
+                sudo sed -i 's/-Xms2703m/-Xms1024m/g' /opt/nexus/bin/nexus.vmoptions
+                sudo sed -i 's/-Xmx2703m/-Xmx1024m/g' /opt/nexus/bin/nexus.vmoptions
+                sudo sed -i 's/-XX:MaxDirectMemorySize=2703m/-XX:MaxDirectMemorySize=1024m/g' /opt/nexus/bin/nexus.vmoptions
+
+                sudo sed -i 's/#run_as_user=""/run_as_user="${var.usuario_nexus}"/g' /opt/nexus/bin/nexus.rc
+
+                sudo cat <<EOF | sudo tee /etc/systemd/system/nexus.service
+                [Unit]
+                Description=nexus service
+                After=network.target
+
+                [Service]
+                Type=forking
+                LimitNOFILE=65536
+                ExecStart=/opt/nexus/bin/nexus start
+                ExecStop=/opt/nexus/bin/nexus stop
+                User=nexus
+                Restart=on-abort
+
+                [Install]
+                WantedBy=multi-user.target
+                EOF
+
+                sudo systemctl start nexus
+
+                # Para pobrar que funciona entrar con http://direccionIp:8081/
 
                 echo "El rol de este servidor es: ${var.server_role}" > /home/ubuntu/b_${var.server_role}.txt
                 FINAL=$(date "+%F %H:%M:%S")

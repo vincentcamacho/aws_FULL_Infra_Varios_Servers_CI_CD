@@ -49,8 +49,8 @@ data "template_file" "userdata_linux_ubuntu" {
                 usuario=${var.usuario_artifact}
                 sudo useradd -U ${var.usuario_artifact} -m -s /bin/bash -p $usuario -G sudo
                 echo "${var.usuario_artifact}:${var.contrasena_user}" | sudo chpasswd
-                echo "${var.usuario_artifact} ALL=(ALL) NOPASSWD: ALL" >> sudo /etc/sudoers
-                echo "${var.usuario_artifact} ALL=(ALL) NOPASSWD: ALL" >> sudo /etc/sudoers.d/90-cloud-init-users
+                sudo bash -c 'echo "${var.usuario_artifact} ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers'
+                sudo bash -c 'echo "${var.usuario_artifact} ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers.d/90-cloud-init-users'
 
                 sudo ufw disable
                 sudo apt update -y && sudo apt upgrade -y && sudo apt install tree -y
@@ -62,7 +62,7 @@ data "template_file" "userdata_linux_ubuntu" {
                 cd /opt/
                 sudo wget https://releases.jfrog.io/artifactory/bintray-artifactory/org/artifactory/oss/jfrog-artifactory-oss/7.31.13/jfrog-artifactory-oss-7.31.13-linux.tar.gz
                 sudo tar -xvf jfrog-artifactory-oss-7.31.13-linux.tar.gz
-                sudo mv /opt/jfrog-artifactory-oss-7.31.13 /opt/artifactory
+                sudo mv /opt/artifactory-oss-7.31.13 /opt/artifactory
 
 
                 echo "El rol de este servidor es: ${var.server_role}" > /home/ubuntu/b_${var.server_role}.txt

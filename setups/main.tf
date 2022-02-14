@@ -238,7 +238,7 @@ module "vm_sonarqube" {
   llave_ssh        = aws_key_pair.mi_ssh_key.key_name
   server_role      = "sonarqube"
   usuario_ansible  = "ansibleadmin"
-  usuario_sonarqb  = "sonaradmin"
+  usuario_sonarqb  = "sonar"
   contrasena_user  = "123"
   proyecto         = var.NOMBRE_PROYECTO
   los_IDs_subredes = module.subredes_publicas.IDs_subredes
@@ -255,7 +255,7 @@ module "vm_nexus" {
   llave_ssh        = aws_key_pair.mi_ssh_key.key_name
   server_role      = "nexus"
   usuario_ansible  = "ansibleadmin"
-  usuario_nexus    = "nexusadmin"
+  usuario_nexus    = "nexus"
   contrasena_user  = "123"
   proyecto         = var.NOMBRE_PROYECTO
   los_IDs_subredes = module.subredes_publicas.IDs_subredes
