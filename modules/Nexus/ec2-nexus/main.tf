@@ -38,6 +38,35 @@ data "template_file" "userdata_linux_ubuntu" {
                 sudo sed -i /etc/sudoers -re 's/^%sudo.*/%sudo ALL=(ALL:ALL) NOPASSWD: ALL/g'
                 sudo sed -i /etc/sudoers -re 's/^#includedir.*/## Removed the #include directive! ##"/g'
 
+                #Evitar que pida el password a cada rato para usuarios que sean parte del grupo sudo
+                sudo sed -i /etc/sudoers -re 's/^%sudo.*/%sudo ALL=(ALL:ALL) NOPASSWD: ALL/g'
+                sudo sed -i /etc/sudoers -re 's/^#includedir.*/## Removed the #include directive! ##"/g'
+
+
+
+                echo "alias c='sudo cat'" | sudo tee -a /home/ubuntu/.bashrc
+                echo "alias md='sudo mkdir'" | sudo tee -a /home/ubuntu/.bashrc
+                echo "alias nt='sudo netstat -tulpn'" | sudo tee -a /home/ubuntu/.bashrc
+                echo "alias hs='history'" | sudo tee -a /home/ubuntu/.bashrc
+                echo "alias hm='cd ~'" | sudo tee -a /home/ubuntu/.bashrc
+                echo "alias l='ls -la'" | sudo tee -a /home/ubuntu/.bashrc
+                echo "alias sy='sudo systemctl status'" | sudo tee -a /home/ubuntu/.bashrc
+                echo "alias sy1='sudo systemctl start'" | sudo tee -a /home/ubuntu/.bashrc
+                echo "alias sy2='sudo systemctl stop'" | sudo tee -a /home/ubuntu/.bashrc
+                echo "alias syr='sudo systemctl restart'" | sudo tee -a /home/ubuntu/.bashrc
+                echo "alias pw='sudo cat /etc/passwd'" | sudo tee -a /home/ubuntu/.bashrc
+                echo "alias sd='sudo cat /etc/sudoers'" | sudo tee -a /home/ubuntu/.bashrc
+                echo "alias sd2='sudo cat /etc/sudoers.d/90-cloud-init-users'" | sudo tee -a /home/ubuntu/.bashrc
+                echo "alias fw='sudo ufw status'" | sudo tee -a /home/ubuntu/.bashrc
+                echo "alias ai='sudo apt install'" | sudo tee -a /home/ubuntu/.bashrc
+                echo "alias up1='sudo apt update -y'" | sudo tee -a /home/ubuntu/.bashrc
+                echo "alias up2='sudo apt update -y && sudo apt upgrade -y'" | sudo tee -a /home/ubuntu/.bashrc
+                echo "alias sshd='sudo cat /etc/ssh/sshd_config'" | sudo tee -a /home/ubuntu/.bashrc
+                echo "alias sshda='sudo cat /etc/ssh/sshd_config | grep Authentication'" | sudo tee -a /home/ubuntu/.bashrc
+                echo "alias vmmc='sudo sysctl vm.max_map_count'" | sudo tee -a /home/ubuntu/.bashrc
+                echo "alias ffm='sudo sysctl fs.file-max'" | sudo tee -a /home/ubuntu/.bashrc
+                
+
                 #Agregar otro usuario para que administre Ansible
                 usuario=${var.usuario_ansible}
                 sudo useradd -U ${var.usuario_ansible} -m -s /bin/bash -p ${var.usuario_ansible} -G sudo
@@ -92,8 +121,12 @@ data "template_file" "userdata_linux_ubuntu" {
                 EOF
 
                 sudo systemctl start nexus
+                sudo systemctl enable nexus
 
-                # Para pobrar que funciona entrar con http://direccionIp:8081/
+                echo "export NEXUS_HOME=/opt/nexus" | sudo tee -a /etc/profile
+                echo "export HNE=/opt/nexus" | sudo tee -a /etc/profile
+
+                # Para pobrar que funciona entrar con http://direccionIpNexus:8081/
 
                 echo "El rol de este servidor es: ${var.server_role}" > /home/ubuntu/b_${var.server_role}.txt
                 FINAL=$(date "+%F %H:%M:%S")

@@ -45,18 +45,21 @@ data "template_file" "userdata_linux_ubuntu" {
                 echo "alias hs='history'" | sudo tee -a /home/ubuntu/.bashrc
                 echo "alias hm='cd ~'" | sudo tee -a /home/ubuntu/.bashrc
                 echo "alias l='ls -la'" | sudo tee -a /home/ubuntu/.bashrc
-                echo "alias sy='sudo systemctl'" | sudo tee -a /home/ubuntu/.bashrc
+                echo "alias sy='sudo systemctl status'" | sudo tee -a /home/ubuntu/.bashrc
                 echo "alias sy1='sudo systemctl start'" | sudo tee -a /home/ubuntu/.bashrc
                 echo "alias sy2='sudo systemctl stop'" | sudo tee -a /home/ubuntu/.bashrc
                 echo "alias syr='sudo systemctl restart'" | sudo tee -a /home/ubuntu/.bashrc
                 echo "alias pw='sudo cat /etc/passwd'" | sudo tee -a /home/ubuntu/.bashrc
                 echo "alias sd='sudo cat /etc/sudoers'" | sudo tee -a /home/ubuntu/.bashrc
-                echo "alias sd2='/etc/sudoers.d/90-cloud-init-users'" | sudo tee -a /home/ubuntu/.bashrc
+                echo "alias sd2='sudo cat /etc/sudoers.d/90-cloud-init-users'" | sudo tee -a /home/ubuntu/.bashrc
                 echo "alias fw='sudo ufw status'" | sudo tee -a /home/ubuntu/.bashrc
                 echo "alias ai='sudo apt install'" | sudo tee -a /home/ubuntu/.bashrc
-                echo "alias sshd='sudo cat /etc/ssh/sshd_config'" | sudo tee -a /home/ubuntu/.bashrc
                 echo "alias up1='sudo apt update -y'" | sudo tee -a /home/ubuntu/.bashrc
                 echo "alias up2='sudo apt update -y && sudo apt upgrade -y'" | sudo tee -a /home/ubuntu/.bashrc
+                echo "alias sshd='sudo cat /etc/ssh/sshd_config'" | sudo tee -a /home/ubuntu/.bashrc
+                echo "alias sshda='sudo cat /etc/ssh/sshd_config | grep Authentication'" | sudo tee -a /home/ubuntu/.bashrc
+                echo "alias vmmc='sudo sysctl vm.max_map_count'" | sudo tee -a /home/ubuntu/.bashrc
+                echo "alias ffm='sudo sysctl fs.file-max'" | sudo tee -a /home/ubuntu/.bashrc
 
 
                 #Agregar otro usuario para que administre Ansible
@@ -103,6 +106,16 @@ data "template_file" "userdata_linux_ubuntu" {
                 sudo systemctl start postgresql
                 sudo systemctl enable postgresql
 
+                # sudo su postgres
+                # createuser ${var.postgres_sonar_user}
+                # psql
+                # ALTER USER sonar WITH ENCRYPTED password '${var.postgres_sonar_pw}';
+                # CREATE DATABASE ${var.postgres_db_name} OWNER ${var.postgres_sonar_user};
+                # grant all privileges on DATABASE ${var.postgres_db_name} to ${var.postgres_sonar_user};
+                # \q
+                # exit
+                # sudo systemctl restart postgresql
+
                 cd /tmp
                 sudo wget https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-8.9.7.52159.zip
                 sudo unzip sonarqube-8.9.7.52159.zip -d /opt
@@ -118,9 +131,9 @@ data "template_file" "userdata_linux_ubuntu" {
                 echo "${var.usuario_sonarqb}:123" | sudo chpasswd
                 
 
-                sudo sed -i 's/#sonar.jdbc.username=/sonar.jdbc.username=${var.usuario_sonarqb}/g' /opt/sonarqube/conf/sonar.properties
-                sudo sed -i 's/#sonar.jdbc.password=/sonar.jdbc.password=admin1234/g' /opt/sonarqube/conf/sonar.properties
-                sudo sed -i 's/#sonar.jdbc.url=jdbc:postgresql:\/\/localhost\/sonarqube?currentSchema=my_schema/sonar.jdbc.url=jdbc:postgresql:\/\/localhost\/sonarqube/g' /opt/sonarqube/conf/sonar.properties
+                sudo sed -i 's/#sonar.jdbc.username=/sonar.jdbc.username=${var.postgres_sonar_user}/g' /opt/sonarqube/conf/sonar.properties
+                sudo sed -i 's/#sonar.jdbc.password=/sonar.jdbc.password=${var.postgres_sonar_pw}/g' /opt/sonarqube/conf/sonar.properties
+                sudo sed -i 's/#sonar.jdbc.url=jdbc:postgresql:\/\/localhost\/sonarqube?currentSchema=my_schema/sonar.jdbc.url=jdbc:postgresql:\/\/localhost\/${var.postgres_db_name}/g' /opt/sonarqube/conf/sonar.properties
                 sudo sed -i 's/#sonar.web.port=9000/sonar.web.port=9000/g' /opt/sonarqube/conf/sonar.properties
                 sudo sed -i 's/#sonar.search.javaOpts=-Xmx512m -Xms512m -XX:MaxDirectMemorySize=256m -XX:+HeapDumpOnOutOfMemoryError/sonar.search.javaOpts=-Xmx512m -Xms512m -XX:MaxDirectMemorySize=256m -XX:+HeapDumpOnOutOfMemoryError/g' /opt/sonarqube/conf/sonar.properties
 
@@ -129,14 +142,14 @@ data "template_file" "userdata_linux_ubuntu" {
                 sudo mkdir -p /var/sonarqube/data
                 sudo mkdir -p /var/sonarqube/temp
                 sudo chown -R ${var.usuario_sonarqb}:sonar /var/sonarqube/data
-                sudo chown -R ${var.usuario_sonarqb}:sonar /var/sonarqube/data
+                sudo chown -R ${var.usuario_sonarqb}:sonar /var/sonarqube/temp
 
                 sudo sed -i 's/#sonar.path.data=data/sonar.path.data=\/var\/sonarqube\/data/g' /opt/sonarqube/conf/sonar.properties
                 sudo sed -i 's/#sonar.path.temp=temp/sonar.path.data=\/var\/sonarqube\/temp/g' /opt/sonarqube/conf/sonar.properties
                 
                 echo "export SONARQUBE_HOME=/opt/sonarqube" | sudo tee -a /etc/profile
                 echo "export SONAR_HOME=/opt/sonarqube" | sudo tee -a /etc/profile
-                echo "export SH=/opt/sonarqube" | sudo tee -a /etc/profile
+                echo "export HSO=/opt/sonarqube" | sudo tee -a /etc/profile
 
                 sudo cat <<EOF | sudo tee /etc/systemd/system/sonar.service
                 [Unit]
@@ -160,8 +173,8 @@ data "template_file" "userdata_linux_ubuntu" {
                 WantedBy=multi-user.target
                 EOF
 
-                # sudo systemctl start sonar
-                # sudo systemctl enable sonar
+                sudo systemctl start sonar
+                sudo systemctl enable sonar
 
                 echo "El rol de este servidor es: ${var.server_role}" > /home/ubuntu/b_${var.server_role}.txt
                 FINAL=$(date "+%F %H:%M:%S")

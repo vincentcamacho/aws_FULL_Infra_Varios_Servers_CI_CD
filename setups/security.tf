@@ -12,6 +12,7 @@ locals {
     { puerto = 443, resumen = "Puerto HTTPS" },
     { puerto = 8080, resumen = "Puerto Jenkins" },
     { puerto = 8081, resumen = "Puerto Nexus" },
+    { puerto = 8082, resumen = "Puerto Artifactory" },
     { puerto = 8090, resumen = "Puerto HTTP_4" },
     { puerto = 8140, resumen = "Puerto Puppet" },
     { puerto = 9000, resumen = "Puerto SonarQube" },

@@ -38,32 +38,69 @@ data "template_file" "userdata_linux_ubuntu" {
                 sudo sed -i /etc/sudoers -re 's/^%sudo.*/%sudo ALL=(ALL:ALL) NOPASSWD: ALL/g'
                 sudo sed -i /etc/sudoers -re 's/^#includedir.*/## Removed the #include directive! ##"/g'
 
+
+
+                echo "alias c='sudo cat'" | sudo tee -a /home/ubuntu/.bashrc
+                echo "alias md='sudo mkdir'" | sudo tee -a /home/ubuntu/.bashrc
+                echo "alias nt='sudo netstat -tulpn'" | sudo tee -a /home/ubuntu/.bashrc
+                echo "alias hs='history'" | sudo tee -a /home/ubuntu/.bashrc
+                echo "alias hm='cd ~'" | sudo tee -a /home/ubuntu/.bashrc
+                echo "alias l='ls -la'" | sudo tee -a /home/ubuntu/.bashrc
+                echo "alias sy='sudo systemctl status'" | sudo tee -a /home/ubuntu/.bashrc
+                echo "alias sy1='sudo systemctl start'" | sudo tee -a /home/ubuntu/.bashrc
+                echo "alias sy2='sudo systemctl stop'" | sudo tee -a /home/ubuntu/.bashrc
+                echo "alias syr='sudo systemctl restart'" | sudo tee -a /home/ubuntu/.bashrc
+                echo "alias pw='sudo cat /etc/passwd'" | sudo tee -a /home/ubuntu/.bashrc
+                echo "alias sd='sudo cat /etc/sudoers'" | sudo tee -a /home/ubuntu/.bashrc
+                echo "alias sd2='sudo cat /etc/sudoers.d/90-cloud-init-users'" | sudo tee -a /home/ubuntu/.bashrc
+                echo "alias fw='sudo ufw status'" | sudo tee -a /home/ubuntu/.bashrc
+                echo "alias ai='sudo apt install'" | sudo tee -a /home/ubuntu/.bashrc
+                echo "alias up1='sudo apt update -y'" | sudo tee -a /home/ubuntu/.bashrc
+                echo "alias up2='sudo apt update -y && sudo apt upgrade -y'" | sudo tee -a /home/ubuntu/.bashrc
+                echo "alias sshd='sudo cat /etc/ssh/sshd_config'" | sudo tee -a /home/ubuntu/.bashrc
+                echo "alias sshda='sudo cat /etc/ssh/sshd_config | grep Authentication'" | sudo tee -a /home/ubuntu/.bashrc
+                echo "alias vmmc='sudo sysctl vm.max_map_count'" | sudo tee -a /home/ubuntu/.bashrc
+                echo "alias ffm='sudo sysctl fs.file-max'" | sudo tee -a /home/ubuntu/.bashrc
+
+
                 #Agregar otro usuario para que administre Ansible
                 usuario=${var.usuario_ansible}
-                sudo useradd -U ${var.usuario_ansible} -m -s /bin/bash -p $usuario -G sudo
+                sudo useradd -U ${var.usuario_ansible} -m -s /bin/bash -G sudo
                 echo "$usuario:${var.contrasena_user}" | sudo chpasswd
                 sudo bash -c 'echo "${var.usuario_ansible} ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers'
                 sudo bash -c 'echo "${var.usuario_ansible} ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers.d/90-cloud-init-users'
 
-                #Agregar otro usuario para que administre Ansible
+                #Agregar otro usuario para que administre ARTIFACT
                 usuario=${var.usuario_artifact}
-                sudo useradd -U ${var.usuario_artifact} -m -s /bin/bash -p $usuario -G sudo
+                sudo useradd -U ${var.usuario_artifact} -m -s /bin/bash -G sudo
                 echo "${var.usuario_artifact}:${var.contrasena_user}" | sudo chpasswd
                 sudo bash -c 'echo "${var.usuario_artifact} ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers'
                 sudo bash -c 'echo "${var.usuario_artifact} ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers.d/90-cloud-init-users'
 
                 sudo ufw disable
-                sudo apt update -y && sudo apt upgrade -y && sudo apt install tree -y
-
+                sudo apt update -y && sudo apt upgrade -y
+                sudo apt install tree tldr net-tools -y
 
                 sudo apt install wget -y
-                sudo apt install default-jdk git -y
+                # sudo apt install default-jdk git -y
 
                 cd /opt/
                 sudo wget https://releases.jfrog.io/artifactory/bintray-artifactory/org/artifactory/oss/jfrog-artifactory-oss/7.31.13/jfrog-artifactory-oss-7.31.13-linux.tar.gz
                 sudo tar -xvf jfrog-artifactory-oss-7.31.13-linux.tar.gz
                 sudo mv /opt/artifactory-oss-7.31.13 /opt/artifactory
 
+                echo "export JFROG_HOME=/opt" | sudo tee -a /etc/profile
+                echo "export HJF=/opt/artifactory" | sudo tee -a /etc/profile
+                echo "export ARTIFACTORY_HOME=/opt/artifactory" | sudo tee -a /etc/profile
+                echo "export HAR=/opt/artifactory" | sudo tee -a /etc/profile
+
+                sudo /opt/artifactory/app/bin/artifactory.sh </dev/null &>/dev/null &
+
+                # OJO Intente crear el servicio con el script debajo pero nunca me funcionaron, solo con el comando de arriba logre correr Artifactory
+                #     sudo /opt/artifactory/app/bin/installService.sh
+                #     sudo systemctl start artifactory.service
+
+                # Para pobrar que funciona entrar con http://IpArtifactory:8082/ui/
 
                 echo "El rol de este servidor es: ${var.server_role}" > /home/ubuntu/b_${var.server_role}.txt
                 FINAL=$(date "+%F %H:%M:%S")
