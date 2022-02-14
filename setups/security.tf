@@ -16,6 +16,7 @@ locals {
     { puerto = 8090, resumen = "Puerto HTTP_4" },
     { puerto = 8140, resumen = "Puerto Puppet" },
     { puerto = 9000, resumen = "Puerto SonarQube" },
+    { puerto = 9001, resumen = "Puerto Sonar.search" },
     { puerto = 6443, resumen = "K8s API server" },
     { puerto = 2379, resumen = "K8s etcd server client API" },
     { puerto = 2380, resumen = "K8s etcd server client API" },

@@ -145,7 +145,7 @@ data "template_file" "userdata_linux_ubuntu" {
                 sudo chown -R ${var.usuario_sonarqb}:sonar /var/sonarqube/temp
 
                 sudo sed -i 's/#sonar.path.data=data/sonar.path.data=\/var\/sonarqube\/data/g' /opt/sonarqube/conf/sonar.properties
-                sudo sed -i 's/#sonar.path.temp=temp/sonar.path.data=\/var\/sonarqube\/temp/g' /opt/sonarqube/conf/sonar.properties
+                sudo sed -i 's/#sonar.path.temp=temp/sonar.path.temp=\/var\/sonarqube\/temp/g' /opt/sonarqube/conf/sonar.properties
                 
                 echo "export SONARQUBE_HOME=/opt/sonarqube" | sudo tee -a /etc/profile
                 echo "export SONAR_HOME=/opt/sonarqube" | sudo tee -a /etc/profile
@@ -173,8 +173,21 @@ data "template_file" "userdata_linux_ubuntu" {
                 WantedBy=multi-user.target
                 EOF
 
-                sudo systemctl start sonar
-                sudo systemctl enable sonar
+                #OJO HAY QUE crear la BD primero y luego iniciar el servicio               
+                # sudo su postgres
+                # createuser sonar
+                # psql
+                # ALTER USER sonar WITH ENCRYPTED password '123';
+                # CREATE DATABASE sonarqube OWNER sonar;
+                # grant all privileges on DATABASE sonarqube to sonar;
+                # \q
+                # exit
+                # sudo systemctl restart postgresql
+                # sudo /opt/sonarqube/bin/linux-x86-64/sonar.sh start
+
+                #ESTO DE ABAJO NO ME FUNCIONO - NO CORRER
+                # sudo systemctl start sonar
+                # sudo systemctl enable sonar
 
                 echo "El rol de este servidor es: ${var.server_role}" > /home/ubuntu/b_${var.server_role}.txt
                 FINAL=$(date "+%F %H:%M:%S")
