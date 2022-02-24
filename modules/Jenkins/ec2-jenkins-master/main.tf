@@ -92,10 +92,10 @@ data "template_file" "userdata_linux_ubuntu" {
                 curl -fsSL https://pkg.jenkins.io/debian-stable/jenkins.io.key | sudo tee /usr/share/keyrings/jenkins-keyring.asc > /dev/null
                 echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian-stable binary/ | sudo tee /etc/apt/sources.list.d/jenkins.list > /dev/null
                 sudo apt update -y
-                sudo apt install jenkins -y
-                sudo systemctl start jenkins
-                chmod +r /var/lib/jenkins/secrets/initialAdminPassword
-                sudo cp /var/lib/jenkins/secrets/initialAdminPassword /home/ubuntu
+                # sudo apt install jenkins -y
+                # sudo systemctl start jenkins
+                # chmod +r /var/lib/jenkins/secrets/initialAdminPassword
+                # sudo cp /var/lib/jenkins/secrets/initialAdminPassword /home/ubuntu
                 
                 sed -i 's/^PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config
                 sed -i 's/^#PubkeyAuthentication yes/PubkeyAuthentication yes/' /etc/ssh/sshd_config

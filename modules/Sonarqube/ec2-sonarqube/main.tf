@@ -185,6 +185,14 @@ data "template_file" "userdata_linux_ubuntu" {
                 # sudo systemctl restart postgresql
                 # sudo /opt/sonarqube/bin/linux-x86-64/sonar.sh start
 
+				#POSIBLES PROBLEMAS TIPICOS
+				#No haber configurado bien lo de abajo, ejemplo cuando se reinicia la maquina se pierde esa config
+				#sudo sysctl -w vm.max_map_count=524288
+                #sudo sysctl -w fs.file-max=131072
+                #ulimit -n 131072
+                #ulimit -u 8192
+				#Hacer troubleshooting viendo los logs en /opt/sonarqube/logs/sonar.FECHAHOY.log
+
                 #ESTO DE ABAJO NO ME FUNCIONO - NO CORRER
                 # sudo systemctl start sonar
                 # sudo systemctl enable sonar

@@ -185,6 +185,8 @@ data "template_file" "userdata_linux_ubuntu" {
                 #Hold the packages to being upgrade
                 sudo apt-mark hold kubelet kubeadm kubectl
 
+                sudo systemctl enable kubelet
+
                 echo "export KUBECONFIG=/etc/kubernetes/admin.conf'" | sudo tee -a /etc/profile
 
                 #INCIALIZAMOS MASTER, YA INSTALADO KUBERNETES

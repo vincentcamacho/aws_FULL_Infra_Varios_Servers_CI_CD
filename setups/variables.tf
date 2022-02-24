@@ -23,6 +23,13 @@ variable "ip_k8_worker_2" { default = "10.0.3.104" }
 variable "ip_sonarqube" { default = "10.0.3.120" }
 variable "ip_nexus" { default = "10.0.3.130" }
 variable "ip_artifactory" { default = "10.0.3.140" }
+variable "ip_eks" { default = "10.0.3.150" }
+variable "ip_openldap" { default = "10.0.3.160" }
+variable "ip_ca" { default = "10.0.3.170" }
+
+
+
+
 
 
 variable "TIPO_MICRO" { default = "t2.micro" }
