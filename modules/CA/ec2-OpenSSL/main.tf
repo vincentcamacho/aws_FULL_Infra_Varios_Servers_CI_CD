@@ -28,7 +28,7 @@ data "template_file" "userdata_linux_ubuntu" {
                 sudo timedatectl set-timezone Europe/Paris
 
                 sudo hostnamectl set-hostname ${var.server_role}
-                echo "ubuntu:${var.contrasena_user}" | chpasswd
+                echo "ubuntu:${var.contrasena_user}" | sudo chpasswd
 
                 sudo sed -i 's/^PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config
                 sudo sed -i 's/^#PubkeyAuthentication yes/PubkeyAuthentication yes/' /etc/ssh/sshd_config

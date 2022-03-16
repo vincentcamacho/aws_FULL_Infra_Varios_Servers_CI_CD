@@ -5,7 +5,7 @@
 # output "Ip_privada_Master_Jenkins" { value = module.vm_jenkins_master.mis_ip_privadas }
 # output "Ip_PUBLICA_Master_Jenkins" { value = module.vm_jenkins_master.mis_ip_publicas }
 
-# # # output "Ip_privada_Slave_Jenkins" { value = module.vm_jenkins_slave.mis_ip_privadas }
+# output "Ip_privada_Slave_Jenkins" { value = module.vm_jenkins_slave.mis_ip_privadas }
 # output "Ip_PUBLICA_Slave_Jenkins" { value = module.vm_jenkins_slave.mis_ip_publicas }
 
 # # output "Ip_privada_Server_Maven" { value = module.vm_maven.mis_ip_privadas }
@@ -20,11 +20,11 @@
 # output "Ip_privada_Server_Docker" { value = module.vm_docker.mis_ip_privadas }
 # output "Ip_PUBLICA_Server_Docker" { value = module.vm_docker.mis_ip_publicas }
 
-# output "Ip_privada_PUPPET_MASTER" { value = module.vm_puppet_master.mis_ip_privadas }
-# output "Ip_PUBLICA_PUPPET_MASTER" { value = module.vm_puppet_master.mis_ip_publicas }
+output "Ip_privada_PUPPET_MASTER" { value = module.vm_puppet_master.mis_ip_privadas }
+output "Ip_PUBLICA_PUPPET_MASTER" { value = module.vm_puppet_master.mis_ip_publicas }
 
-# output "Ip_privada_PUPPET_Client" { value = module.vm_puppet_client.mis_ip_privadas }
-# output "Ip_PUBLICA_PUPPET_Client" { value = module.vm_puppet_client.mis_ip_publicas }
+output "Ip_privada_PUPPET_Client" { value = module.vm_puppet_client.mis_ip_privadas }
+output "Ip_PUBLICA_PUPPET_Client" { value = module.vm_puppet_client.mis_ip_publicas }
 
 # output "Ip_privada_K8s_MASTER" { value = module.vm_k8_master.mis_ip_privadas }
 # output "Ip_PUBLICA_K8s_MASTER" { value = module.vm_k8_master.mis_ip_publicas }
@@ -47,9 +47,9 @@
 # output "Ip_privada_EKS" { value = module.vm_eks.mis_ip_privadas }
 # output "Ip_PUBLICA_EKS" { value = module.vm_eks.mis_ip_publicas }
 
-output "Ip_privada_Open_LDAP" { value = module.vm_open_ldap.mis_ip_privadas }
-output "Ip_PUBLICA_Open_LDAP" { value = module.vm_open_ldap.mis_ip_publicas }
+# output "Ip_privada_Open_LDAP" { value = module.vm_open_ldap.mis_ip_privadas }
+# output "Ip_PUBLICA_Open_LDAP" { value = module.vm_open_ldap.mis_ip_publicas }
 
-output "Ip_privada_CA" { value = module.vm_ca.mis_ip_privadas }
-output "Ip_PUBLICA_CA" { value = module.vm_ca.mis_ip_publicas }
+# output "Ip_privada_CA" { value = module.vm_ca.mis_ip_privadas }
+# output "Ip_PUBLICA_CA" { value = module.vm_ca.mis_ip_publicas }
 

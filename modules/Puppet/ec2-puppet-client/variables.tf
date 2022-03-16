@@ -1,7 +1,8 @@
 variable "llave_ssh" {}
-variable "server_role" {}
-variable "usuario_ansible" {}
-variable "contrasena_user" {}
+variable "server_master" {}
+variable "server_cliente" {}
+variable "usuario_app" {}
+variable "pw_user_app" {}
 variable "proyecto" {}
 variable "los_IDs_subredes" {}
 variable "ip_nodos_master" {}
@@ -11,11 +12,3 @@ variable "AZs" {}
 variable "win_server_ami" {}
 variable "region" {}
 variable "tipo_instancia" {}
-
-variable "ip_server_docker" {}
-variable "ip_server_tomcat" {}
-variable "ip_server_jenkins_master" {}
-variable "ip_server_jenkins_slave" {}
-variable "ip_server_k8s_master" {}
-variable "ip_server_k8s_worker_1" {}
-variable "ip_server_k8s_worker_2" {}

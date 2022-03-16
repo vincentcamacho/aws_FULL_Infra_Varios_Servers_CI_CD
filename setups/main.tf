@@ -22,7 +22,7 @@ module "subredes_publicas" {
 #   AZs              = var.AV_ZONES
 #   win_server_ami   = var.UBUNTU_AMI
 #   region           = var.REGION
-#   tipo_instancia   = var.TIPO_MEDIANA
+#   tipo_instancia   = var.TIPO_MICRO
 
 #   ip_server_docker        = var.ip_docker
 #   ip_server_tomcat        = var.ip_tomcat
@@ -65,7 +65,7 @@ module "subredes_publicas" {
 #   AZs              = var.AV_ZONES
 #   win_server_ami   = var.UBUNTU_AMI
 #   region           = var.REGION
-#   tipo_instancia   = var.TIPO_PEQUENA
+#   tipo_instancia   = var.TIPO_MICRO
 # }
 
 # module "vm_tomcat" {
@@ -129,55 +129,41 @@ module "subredes_publicas" {
 # }
 
 
-# module "vm_puppet_master" {
-#   source           = "../modules/Puppet/ec2-puppet-master"
-#   llave_ssh        = aws_key_pair.mi_ssh_key.key_name
-#   server_role      = "puppetmaster"
-#   usuario_ansible  = "ansibleadmin"
-#   contrasena_user  = "123"
-#   proyecto         = var.NOMBRE_PROYECTO
-#   los_IDs_subredes = module.subredes_publicas.IDs_subredes
-#   ip_nodos_master  = [var.ip_puppet_master]
-#   ip_nodos_client  = [var.ip_puppet_client]
-#   los_SG           = aws_security_group.mi_sec_group.id
-#   AZs              = var.AV_ZONES
-#   win_server_ami   = var.UBUNTU_AMI
-#   region           = var.REGION
-#   tipo_instancia   = var.TIPO_MEDIANA
+module "vm_puppet_master" {
+  source           = "../modules/Puppet/ec2-puppet-master"
+  llave_ssh        = aws_key_pair.mi_ssh_key.key_name
+  server_master    = "puppetmaster"
+  server_cliente   = "puppetclient"
+  usuario_app      = "puppetadmin"
+  pw_user_app      = "123"
+  proyecto         = var.NOMBRE_PROYECTO
+  los_IDs_subredes = module.subredes_publicas.IDs_subredes
+  ip_nodos_master  = [var.ip_puppet_master]
+  ip_nodos_client  = [var.ip_puppet_client]
+  los_SG           = aws_security_group.mi_sec_group.id
+  AZs              = var.AV_ZONES
+  win_server_ami   = var.UBUNTU_AMI
+  region           = var.REGION
+  tipo_instancia   = var.TIPO_MEDIANA
+}
 
-#   ip_server_docker         = var.ip_docker
-#   ip_server_tomcat         = var.ip_tomcat
-#   ip_server_jenkins_master = var.ip_jenkins_master
-#   ip_server_jenkins_slave  = var.ip_jenkins_slave
-#   ip_server_k8s_master     = var.ip_k8_master
-#   ip_server_k8s_worker_1   = var.ip_k8_worker_1
-#   ip_server_k8s_worker_2   = var.ip_k8_worker_2
-# }
-
-# module "vm_puppet_client" {
-#   source           = "../modules/Puppet/ec2-puppet-client"
-#   llave_ssh        = aws_key_pair.mi_ssh_key.key_name
-#   proyecto         = var.NOMBRE_PROYECTO
-#   server_role      = "puppetclient"
-#   usuario_ansible  = "ansibleadmin"
-#   contrasena_user  = "123"
-#   los_IDs_subredes = module.subredes_publicas.IDs_subredes
-#   ip_nodos_master  = [var.ip_puppet_master]
-#   ip_nodos_client  = [var.ip_puppet_client]
-#   los_SG           = aws_security_group.mi_sec_group.id
-#   AZs              = var.AV_ZONES
-#   win_server_ami   = var.UBUNTU_AMI
-#   region           = var.REGION
-#   tipo_instancia   = var.TIPO_PEQUENA
-
-#   ip_server_docker         = var.ip_docker
-#   ip_server_tomcat         = var.ip_tomcat
-#   ip_server_jenkins_master = var.ip_jenkins_master
-#   ip_server_jenkins_slave  = var.ip_jenkins_slave
-#   ip_server_k8s_master     = var.ip_k8_master
-#   ip_server_k8s_worker_1   = var.ip_k8_worker_1
-#   ip_server_k8s_worker_2   = var.ip_k8_worker_2
-# }
+module "vm_puppet_client" {
+  source           = "../modules/Puppet/ec2-puppet-client"
+  llave_ssh        = aws_key_pair.mi_ssh_key.key_name
+  proyecto         = var.NOMBRE_PROYECTO
+  server_master    = "puppetmaster"
+  server_cliente   = "puppetclient"
+  usuario_app      = "puppetadmin"
+  pw_user_app      = "123"
+  los_IDs_subredes = module.subredes_publicas.IDs_subredes
+  ip_nodos_master  = [var.ip_puppet_master]
+  ip_nodos_client  = [var.ip_puppet_client]
+  los_SG           = aws_security_group.mi_sec_group.id
+  AZs              = var.AV_ZONES
+  win_server_ami   = var.UBUNTU_AMI
+  region           = var.REGION
+  tipo_instancia   = var.TIPO_MICRO
+}
 
 # module "vm_eks" {
 #   source              = "../modules/Kubernetes EKS AWS/EKS"
@@ -304,36 +290,36 @@ module "subredes_publicas" {
 #   tipo_instancia   = var.TIPO_MEDIANA
 # }
 
-module "vm_open_ldap" {
-  source           = "../modules/OpenLDAP/ec2-open-ldap"
-  llave_ssh        = aws_key_pair.mi_ssh_key.key_name
-  server_role      = "openldap"
-  usuario_ansible  = "ansibleadmin"
-  usuario_admin    = "ldapadmin"
-  contrasena_user  = "123"
-  ip_fija_privada  = var.ip_openldap
-  proyecto         = var.NOMBRE_PROYECTO
-  los_IDs_subredes = module.subredes_publicas.IDs_subredes
-  los_SG           = aws_security_group.mi_sec_group.id
-  AZs              = var.AV_ZONES
-  server_ami   = var.UBUNTU_AMI
-  region           = var.REGION
-  tipo_instancia   = var.TIPO_MICRO
-}
+# module "vm_open_ldap" {
+#   source           = "../modules/OpenLDAP/ec2-open-ldap"
+#   llave_ssh        = aws_key_pair.mi_ssh_key.key_name
+#   server_role      = "openldap"
+#   usuario_ansible  = "ansibleadmin"
+#   usuario_admin    = "ldapadmin"
+#   contrasena_user  = "123"
+#   ip_fija_privada  = var.ip_openldap
+#   proyecto         = var.NOMBRE_PROYECTO
+#   los_IDs_subredes = module.subredes_publicas.IDs_subredes
+#   los_SG           = aws_security_group.mi_sec_group.id
+#   AZs              = var.AV_ZONES
+#   server_ami   = var.UBUNTU_AMI
+#   region           = var.REGION
+#   tipo_instancia   = var.TIPO_MICRO
+# }
 
-module "vm_ca" {
-  source           = "../modules/CA/ec2-OpenSSL"
-  llave_ssh        = aws_key_pair.mi_ssh_key.key_name
-  server_role      = "ca"
-  usuario_ansible  = "ansibleadmin"
-  usuario_admin    = "caadmin"
-  contrasena_user  = "123"
-  ip_fija_privada  = var.ip_ca
-  proyecto         = var.NOMBRE_PROYECTO
-  los_IDs_subredes = module.subredes_publicas.IDs_subredes
-  los_SG           = aws_security_group.mi_sec_group.id
-  AZs              = var.AV_ZONES
-  server_ami   = var.UBUNTU_AMI
-  region           = var.REGION
-  tipo_instancia   = var.TIPO_MICRO
-}
+# module "vm_ca" {
+#   source           = "../modules/CA/ec2-OpenSSL"
+#   llave_ssh        = aws_key_pair.mi_ssh_key.key_name
+#   server_role      = "ca"
+#   usuario_ansible  = "ansibleadmin"
+#   usuario_admin    = "caadmin"
+#   contrasena_user  = "123"
+#   ip_fija_privada  = var.ip_ca
+#   proyecto         = var.NOMBRE_PROYECTO
+#   los_IDs_subredes = module.subredes_publicas.IDs_subredes
+#   los_SG           = aws_security_group.mi_sec_group.id
+#   AZs              = var.AV_ZONES
+#   server_ami   = var.UBUNTU_AMI
+#   region           = var.REGION
+#   tipo_instancia   = var.TIPO_MICRO
+# }

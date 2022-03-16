@@ -1,5 +1,5 @@
 resource "aws_key_pair" "mi_ssh_key" {
-  key_name   = "key-pair-para-instancias-ec2"
+  key_name   = "key-pair-para-instancias-ec2-2"
   public_key = file(var.RUTA_LLAVE_PUBLICA)
 }
 
