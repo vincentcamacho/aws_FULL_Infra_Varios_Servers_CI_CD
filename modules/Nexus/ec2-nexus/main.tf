@@ -125,6 +125,7 @@ data "template_file" "userdata_linux_ubuntu" {
 
                 echo "export NEXUS_HOME=/opt/nexus" | sudo tee -a /etc/profile
                 echo "export HNE=/opt/nexus" | sudo tee -a /etc/profile
+                source /etc/profile
 
                 # Para pobrar que funciona entrar con http://direccionIpNexus:8081/
 
