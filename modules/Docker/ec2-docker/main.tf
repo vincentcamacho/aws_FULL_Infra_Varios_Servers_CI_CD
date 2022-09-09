@@ -50,29 +50,20 @@ data "template_file" "userdata_linux_ubuntu" {
                 sudo ufw disable
                 sudo apt update -y && sudo apt upgrade -y && sudo apt install tree -y
 
-                #Uninstall old Docker versions
-                sudo apt remove docker docker.io containerd runc -y
-
-                #Before you install Docker Engine for the first time on a new host machine, you need to set up the Docker repository. Afterward, you can install and update Docker from the repository
-                sudo apt install ca-certificates curl gnupg lsb-release apt-transport-https -y
-
-                sudo apt autoremove -y
-
-                #Add Docker's official GPG key:
-                sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
-
-                #Use the following command to set up the stable repository. To add the nightly or test repository, add the word nightly or test (or both) after the word stable in the commands below
-                echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-
-                #Install Docker Engine
-                sudo apt update -y
-                sudo apt install docker-ce docker-ce-cli containerd.io -y
-
-                #Add your user to the docker group
+                #Install Docker
+                sudo apt-get update
+                # sudo apt-get upgrade -y
+                sudo apt-get remove -y docker docker-engine docker.io containerd runc
+                sudo apt-get install -y ca-certificates curl gnupg lsb-release
+                sudo mkdir -p /etc/apt/keyrings
+                curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+                echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+                sudo apt-get update
+                sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
                 sudo usermod -aG docker $USER
-
-                #Change the docker.sock permission
-                sudo chmod 666 /var/run/docker.sock
+                sudo systemctl start docker
+                # sudo su $USER
+                docker run -d --name neoweb -p 8080:80  nginxdemos/hello
 
                 #Agregar usuario para que administre DOCKER
                 usuario=${var.usuario_docker}
