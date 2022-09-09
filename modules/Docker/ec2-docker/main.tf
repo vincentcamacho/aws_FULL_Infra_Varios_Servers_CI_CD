@@ -78,9 +78,6 @@ data "template_file" "userdata_linux_ubuntu" {
                 #APROVECHEMOS para tambien agregar al usuario ANSIBLE al grupo Docker
                 sudo usermod -aG docker ${var.usuario_ansible}
 
-                #Change the docker.sock permission
-                sudo chmod 666 /var/run/docker.sock
-
                 #Crear alias SUPER UTILES para el usuario nuevo creado
                 echo "alias d='docker'" | sudo tee -a /home/$usuario/.bashrc
                 echo "alias dp='docker ps'" | sudo tee -a /home/$usuario/.bashrc
